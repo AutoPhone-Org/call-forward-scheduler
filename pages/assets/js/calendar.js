@@ -210,8 +210,14 @@
       }
     }
 
+    // 按 7 个一行包进 cal-row（与表头结构一致，保证 7 列网格布局）
+    var rows = [];
+    for (var r = 0; r < cells.length; r += 7) {
+      rows.push('<div class="cal-row">' + cells.slice(r, r + 7).join("") + "</div>");
+    }
+
     calGrid.className = "cal-grid";
-    calGrid.innerHTML = headHTML + cells.join("");
+    calGrid.innerHTML = headHTML + rows.join("");
   }
 
   /* ---------- 年视图渲染 ---------- */
