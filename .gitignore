@@ -20,3 +20,6 @@ Thumbs.db
 # 签名/密钥
 *.jks
 *.keystore
+
+# Wiki（独立仓库，推送到 repo.wiki.git）
+wiki/

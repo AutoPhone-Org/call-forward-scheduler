@@ -12,7 +12,7 @@
 
 基于 Shizuku 的「定时倒班切换自动呼叫转移」Android App，无 root 即可按排班表自动把本机来电转给当班人。
 
-> 详细产品需求见 [`../docs/PRD_自动呼叫转移排班助手.md`](../docs/PRD_自动呼叫转移排班助手.md)
+> 详细产品需求见 [`docs/PRD_自动呼叫转移排班助手.md`](docs/PRD_自动呼叫转移排班助手.md) · 使用文档见 [Wiki](https://github.com/AutoPhone-Org/call-forward-scheduler/wiki)
 
 ## 功能特性
 
