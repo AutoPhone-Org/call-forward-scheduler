@@ -30,10 +30,13 @@ class RosterEngineTest {
         )
         val points = engine.expandToSwitchPoints(roster, people)
         assertEquals(3, points.size)
-        assertEquals(8 * 60, points[0].atMinute)
-        assertEquals("思源", points[0].personName)
-        assertEquals(16 * 60, points[1].atMinute)
-        assertEquals(24 * 60, points[2].atMinute) // 晚班 start=00:00 → 2400? 见注释
+        // 排序后：晚班(00:00) 最早，其次早班(08:00)、中班(16:00)
+        assertEquals(0, points[0].atMinute)
+        assertEquals("小红", points[0].personName)
+        assertEquals(8 * 60, points[1].atMinute)
+        assertEquals("思源", points[1].personName)
+        assertEquals(16 * 60, points[2].atMinute)
+        assertEquals("小明", points[2].personName)
     }
 
     /** 两班倒（12h）一天应生成 2 个切换节点：08:00/20:00 */
@@ -48,9 +51,11 @@ class RosterEngineTest {
         val points = engine.expandToSwitchPoints(roster, people)
         assertEquals(2, points.size)
         assertEquals(8 * 60, points[0].atMinute)
-        assertEquals("思源", points[0].targetPhone)
+        assertEquals("思源", points[0].personName)
+        assertEquals("13033696831", points[0].targetPhone)
         assertEquals(20 * 60, points[1].atMinute)
-        assertEquals("小明", points[1].targetPhone)
+        assertEquals("小明", points[1].personName)
+        assertEquals("13800000111", points[1].targetPhone)
     }
 
     /** 给定时刻查当班人：14:00 应命中白班(08-20) */
