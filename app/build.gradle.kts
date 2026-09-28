@@ -11,8 +11,8 @@ android {
         applicationId = "com.autophone.callforward"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = (System.getenv("VERSION_CODE") ?: "1").toInt()
+        versionName = System.getenv("VERSION_NAME") ?: "0.1.0"
     }
 
     buildTypes {
@@ -22,6 +22,8 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // CI 自动发布使用 debug 签名，避免依赖外部 keystore（正式发布请替换为独立签名）
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 

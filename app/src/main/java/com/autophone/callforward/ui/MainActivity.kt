@@ -74,6 +74,24 @@ class MainActivity : AppCompatActivity() {
         Shizuku.addRequestPermissionResultListener(permissionListener)
         updateStatus()
         handleImportIntent(intent)
+        checkUpdate()
+    }
+
+    /** 异步检查更新；有新版时弹提示。 */
+    private fun checkUpdate() {
+        Thread {
+            val info = com.autophone.callforward.update.UpdateChecker(this).check()
+            runOnUiThread {
+                if (info.hasUpdate) {
+                    val msg = getString(
+                        R.string.update_available,
+                        com.autophone.callforward.update.UpdateChecker(this).currentVersion(),
+                        info.latestVersion ?: "",
+                    )
+                    Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+                }
+            }
+        }.start()
     }
 
     /** 转移类型下拉框 */
