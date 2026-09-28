@@ -37,9 +37,13 @@ jobs:
             NEW_TAG="v${MAJOR}.${MINOR}.${NEW_PATCH}"
           fi
 
-          # 版本号给 APK 用（去掉 v 前缀），versionCode 用 patch 递增
+          # 版本号给 APK 用（去掉 v 前缀）
           APP_VERSION=${NEW_TAG#v}
-          VERSION_CODE=$(( $(echo "$APP_VERSION" | cut -d. -f3) + 0 ))
+          # versionCode 用 Git 提交总数，保证正整数且单调递增
+          VERSION_CODE=$(git rev-list --count HEAD)
+          if [ -z "$VERSION_CODE" ] || [ "$VERSION_CODE" -lt 1 ]; then
+            VERSION_CODE=1
+          fi
 
           echo "Previous tag: ${LATEST_TAG:-none}"
           echo "New tag: $NEW_TAG"
