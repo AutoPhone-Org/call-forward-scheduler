@@ -251,6 +251,11 @@
     var hasPeople = Object.keys(config.people).length > 0;
     var hasRoster = config.roster.length > 0;
 
+    // 同步刷新排班日历（若日历模块已加载）
+    if (window.renderCalendar) {
+      window.renderCalendar(config);
+    }
+
     if (!hasPeople && !hasRoster) {
       importLink.removeAttribute("href");
       importLink.setAttribute("aria-disabled", "true");

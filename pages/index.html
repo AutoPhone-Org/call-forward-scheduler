@@ -32,6 +32,7 @@
       <nav class="nav-links">
         <a href="#features">功能特性</a>
         <a href="#steps">使用步骤</a>
+        <a href="#calendar">排班日历</a>
         <a href="#editor">配置导入</a>
         <a class="nav-cta" href="#editor">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
@@ -185,6 +186,37 @@
     </div>
   </section>
 
+  <!-- 排班日历 -->
+  <section class="section calendar-section" id="calendar">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">排班预览</span>
+        <h2>排班日历</h2>
+        <p>以月视图查看每日班次与当班人员，随下方编辑器实时更新。</p>
+      </div>
+
+      <div class="calendar-card">
+        <!-- 工具栏 -->
+        <div class="cal-toolbar">
+          <div class="cal-nav">
+            <span class="cal-title" id="calTitle"></span>
+            <button class="cal-btn" type="button" id="calToday" title="返回今日">返回今日</button>
+            <button class="cal-btn cal-arrow" type="button" id="calPrev" title="上月">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <button class="cal-btn cal-arrow" type="button" id="calNext" title="下月">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+          <div class="cal-legend" id="calLegend"></div>
+        </div>
+
+        <!-- 月视图表格 -->
+        <div class="cal-grid" id="calGrid"></div>
+      </div>
+    </div>
+  </section>
+
   <!-- 配置编辑器 -->
   <section class="section editor-section" id="editor">
     <div class="container">
@@ -320,5 +352,6 @@
   <div class="toast" id="toast" role="status"></div>
 
   <script src="assets/js/editor.js"></script>
+  <script src="assets/js/calendar.js"></script>
 </body>
 </html>
