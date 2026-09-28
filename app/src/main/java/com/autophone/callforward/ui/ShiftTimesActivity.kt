@@ -93,7 +93,7 @@ class ShiftTimesActivity : AppCompatActivity() {
             textSize = 15f
             setTypeface(null, android.graphics.Typeface.BOLD)
         }
-        header.addView(nameView, ViewGroup.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+        header.addView(nameView, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
 
         val statusText = TextView(this).apply {
             setTextColor(getColor(R.color.text_secondary))
@@ -110,7 +110,7 @@ class ShiftTimesActivity : AppCompatActivity() {
         }
 
         val startInput = makeTimeInput(shift.startLabel(), getString(R.string.shift_start_hint))
-        timeRow.addView(startInput, ViewGroup.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+        timeRow.addView(startInput, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
 
         val sep = TextView(this).apply {
             text = "  -  "
@@ -119,7 +119,7 @@ class ShiftTimesActivity : AppCompatActivity() {
         timeRow.addView(sep)
 
         val endInput = makeTimeInput(shift.endLabel(), getString(R.string.shift_end_hint))
-        timeRow.addView(endInput, ViewGroup.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+        timeRow.addView(endInput, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
 
         inner.addView(timeRow)
 
@@ -156,10 +156,10 @@ class ShiftTimesActivity : AppCompatActivity() {
         return card
     }
 
-    private fun makeTimeInput(initial: String, hint: String): TextInputEditText {
+    private fun makeTimeInput(initial: String, hintText: String): TextInputEditText {
         return TextInputEditText(this).apply {
             setText(initial)
-            hint = hint
+            hint = hintText
             textSize = 15f
             setPadding(dp(12), dp(10), dp(12), dp(10))
             inputType = android.text.InputType.TYPE_CLASS_DATETIME or android.text.InputType.TYPE_DATETIME_VARIATION_TIME
