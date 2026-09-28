@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var cancelButton: Button
 
     private val permissionListener = OnRequestPermissionResultListener { requestCode, grantResult ->
-        if (grantResult == Shizuku.OnRequestPermissionResultListener.GRANT_RESULT_GRANTED) {
+        if (grantResult == android.content.pm.PackageManager.PERMISSION_GRANTED) {
             updateStatus()
         }
     }
