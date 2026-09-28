@@ -5,7 +5,7 @@
 <h1 align="center">呼叫转移排班助手（Call Forward Scheduler）</h1>
 
 <p align="center">
-  <img alt="Build & Test" src="https://github.com/<owner>/<repo>/actions/workflows/build.yml/badge.svg"/>
+  <img alt="Build & Test" src="https://github.com/AutoPhone-Org/call-forward-scheduler/actions/workflows/build.yml/badge.svg"/>
   <img alt="License" src="https://img.shields.io/badge/license-Apache%202.0-blue.svg"/>
   <img alt="Kotlin" src="https://img.shields.io/badge/Kotlin-1.9-blue"/>
 </p>
