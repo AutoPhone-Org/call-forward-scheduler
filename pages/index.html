@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>呼叫转移排班助手 · 定时倒班自动呼叫转移</title>
+  <meta name="description" content="基于 Shizuku 的定时倒班自动呼叫转移 Android 应用，无 root 即可按排班表把本机来电转给当班人。支持人员管理、多班次排班与一键配置导入。" />
+  <meta name="theme-color" content="#2563EB" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='b' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%232563EB'/%3E%3Cstop offset='100%25' stop-color='%230EA5E9'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='116' fill='url(%23b)'/%3E%3Cpath d='M96 200 C 160 160, 224 240, 288 200 S 416 160, 448 184' fill='none' stroke='%23fff' stroke-opacity='.85' stroke-width='34' stroke-linecap='round'/%3E%3Cpath d='M96 264 C 160 224, 224 304, 288 264 S 416 224, 448 248' fill='none' stroke='%23fff' stroke-opacity='.85' stroke-width='34' stroke-linecap='round'/%3E%3Cpath d='M96 328 C 160 288, 224 368, 288 328 S 416 288, 448 312' fill='none' stroke='%23fff' stroke-opacity='.85' stroke-width='34' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+  <!-- 顶部导航 -->
+  <header class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="#">
+        <svg class="brand-logo" viewBox="0 0 512 512" aria-hidden="true">
+          <defs>
+            <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#2563EB"/>
+              <stop offset="100%" stop-color="#0EA5E9"/>
+            </linearGradient>
+          </defs>
+          <rect width="512" height="512" rx="116" fill="url(#lg)"/>
+          <path d="M96 200 C 160 160, 224 240, 288 200 S 416 160, 448 184" fill="none" stroke="#fff" stroke-opacity="0.85" stroke-width="34" stroke-linecap="round"/>
+          <path d="M96 264 C 160 224, 224 304, 288 264 S 416 224, 448 248" fill="none" stroke="#fff" stroke-opacity="0.85" stroke-width="34" stroke-linecap="round"/>
+          <path d="M96 328 C 160 288, 224 368, 288 328 S 416 288, 448 312" fill="none" stroke="#fff" stroke-opacity="0.85" stroke-width="34" stroke-linecap="round"/>
+        </svg>
+        <span>呼叫转移排班助手</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#features">功能特性</a>
+        <a href="#steps">使用步骤</a>
+        <a href="#editor">配置导入</a>
+        <a class="nav-cta" href="#editor">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          开始配置
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <span class="eyebrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
+          基于 Shizuku · 无需 root
+        </span>
+        <h1>定时倒班，<span class="accent">自动呼叫转移</span></h1>
+        <p class="hero-sub">
+          按排班表自动把本机来电转给当班人。人员、班次、转移类型一次配置，
+          通过 Deep Link 一键导入 App，让每通来电都精准送达当班人。
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#editor">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            立即配置导入
+          </a>
+          <a class="btn btn-ghost" href="#features">
+            了解更多
+          </a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat"><b>6</b><span>内置班次模板</span></div>
+          <div class="stat"><b>4</b><span>转移类型</span></div>
+          <div class="stat"><b>0</b><span>Root 依赖</span></div>
+        </div>
+      </div>
+
+      <div class="hero-card">
+        <div class="card-head">
+          <span class="title">今日排班预览</span>
+          <span class="chip">运行中</span>
+        </div>
+        <div class="roster-line">
+          <span class="shift"><span class="shift-dot day"></span>白班</span>
+          <span class="who">思源 · 138****0001</span>
+        </div>
+        <div class="roster-line">
+          <span class="shift"><span class="shift-dot eve"></span>夜班</span>
+          <span class="who">林澈 · 139****0002</span>
+        </div>
+        <div class="roster-line">
+          <span class="shift"><span class="shift-dot night"></span>中班</span>
+          <span class="who">苏芮 · 137****0003</span>
+        </div>
+        <div class="flow-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+        </div>
+        <div class="roster-line" style="margin-bottom:0;">
+          <span class="shift"><span class="shift-dot all"></span>当前转移目标</span>
+          <span class="who" style="color:#2563eb;font-weight:600;">当班人自动切换</span>
+        </div>
+      </div>
+    </div>
+
+    <svg class="hero-wave" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 64 C 240 8, 480 112, 720 72 S 1200 24, 1440 72 L 1440 120 L 0 120 Z" fill="#ffffff"/>
+    </svg>
+  </section>
+
+  <!-- 功能特性 -->
+  <section class="section" id="features">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">功能特性</span>
+        <h2>为轮班团队打造的电话值守方案</h2>
+        <p>无需 root，无需手动拨号，排班一到自动切换呼叫转移目标。</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature">
+          <span class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </span>
+          <h3>定时倒班切换</h3>
+          <p>按排班表在指定时刻自动切换呼叫转移目标，无人值守也能精准交接。</p>
+        </div>
+        <div class="feature">
+          <span class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>
+          </span>
+          <h3>多班次排班</h3>
+          <p>内置两班倒、三班倒、四班两倒、四班三倒模板，支持全天、白班、夜班等班次与每日多切换节点。</p>
+        </div>
+        <div class="feature">
+          <span class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </span>
+          <h3>无 Root 转移</h3>
+          <p>经 Shizuku 以 shell 权限下发 USSD 指令，无需 root 即可完成呼叫转移。</p>
+        </div>
+        <div class="feature">
+          <span class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </span>
+          <h3>一键取消</h3>
+          <p>随时一键取消全部转移，避免漏接来电，测试切换安全无忧。</p>
+        </div>
+        <div class="feature">
+          <span class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </span>
+          <h3>配置导入</h3>
+          <p>在网页端录入人员与排班，生成 Deep Link 一键导入 App，免去手机端重复填写。</p>
+        </div>
+        <div class="feature">
+          <span class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </span>
+          <h3>稳定可靠</h3>
+          <p>基于精确闹钟与开机恢复，排班任务持久可靠，重启后自动重建调度。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 使用步骤 -->
+  <section class="section section-alt" id="steps">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">使用步骤</span>
+        <h2>三步开启自动呼叫转移</h2>
+        <p>从配置到值守，全程几分钟即可完成。</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <span class="step-num">1</span>
+          <h3>安装并激活 Shizuku</h3>
+          <p>在手机安装 Shizuku 并通过无线调试或 root 方式激活，为 App 提供 shell 权限。</p>
+        </div>
+        <div class="step">
+          <span class="step-num">2</span>
+          <h3>配置人员与排班</h3>
+          <p>在下方编辑器录入人员与手机号映射、转移类型与每日排班表，生成导入链接。</p>
+        </div>
+        <div class="step">
+          <span class="step-num">3</span>
+          <h3>导入并一键转移</h3>
+          <p>点击「导入到 App」唤起应用完成配置，授权后即可设置或随时取消转移。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 配置编辑器 -->
+  <section class="section editor-section" id="editor">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">配置导入</span>
+        <h2>在线配置编辑器</h2>
+        <p>填写人员、转移类型与排班表，实时生成 <code>callforward://</code> 导入链接。</p>
+      </div>
+
+      <div class="editor-card">
+        <div class="editor-toolbar">
+          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+          <span class="label">call-forward-scheduler · 配置编辑器</span>
+        </div>
+        <div class="editor-body">
+
+          <!-- 人员 -->
+          <div class="field-block">
+            <div class="field-title"><span class="idx">1</span>人员与手机号</div>
+            <div class="field-hint">录入「姓名 → 手机号」映射，供排班与转移目标使用。</div>
+            <div class="people-list" id="peopleList"></div>
+            <button class="add-btn" type="button" id="addPerson" style="margin-top:12px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              添加人员
+            </button>
+          </div>
+
+          <!-- 转移类型 -->
+          <div class="field-block">
+            <div class="field-title"><span class="idx">2</span>转移类型</div>
+            <div class="field-hint">选择默认的呼叫转移类型，对应运营商 USSD 前缀。</div>
+            <div class="type-options" id="typeOptions">
+              <label class="type-option">
+                <input type="radio" name="forwardType" value="unconditional" checked />
+                <span class="type-card">
+                  <span class="t-name">无条件转移</span>
+                  <span class="t-code">unconditional · *21*</span>
+                </span>
+              </label>
+              <label class="type-option">
+                <input type="radio" name="forwardType" value="busy" />
+                <span class="type-card">
+                  <span class="t-name">遇忙转移</span>
+                  <span class="t-code">busy · *67*</span>
+                </span>
+              </label>
+              <label class="type-option">
+                <input type="radio" name="forwardType" value="noanswer" />
+                <span class="type-card">
+                  <span class="t-name">无应答转移</span>
+                  <span class="t-code">noanswer · *61*</span>
+                </span>
+              </label>
+              <label class="type-option">
+                <input type="radio" name="forwardType" value="unreachable" />
+                <span class="type-card">
+                  <span class="t-name">不可及转移</span>
+                  <span class="t-code">unreachable · *62*</span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <!-- 排班表 -->
+          <div class="field-block">
+            <div class="field-title"><span class="idx">3</span>排班表</div>
+            <div class="field-hint">为每一天添加一个或多个「班次 + 人员」指派。</div>
+            <div class="roster-list" id="rosterList"></div>
+            <button class="add-btn" type="button" id="addDay" style="margin-top:16px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              添加排班日
+            </button>
+          </div>
+
+          <!-- 生成 -->
+          <div class="field-block" style="margin-bottom:0;">
+            <div class="field-title"><span class="idx">4</span>生成导入链接</div>
+            <div class="generate-area">
+              <div class="generate-row">
+                <a class="btn btn-import" id="importLink" href="#">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  导入到 App
+                </a>
+                <button class="btn btn-copy" type="button" id="copyLink">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  复制链接
+                </button>
+              </div>
+              <div class="link-preview" id="linkPreview">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                <span id="linkText">填写上方配置后，链接将在此显示。</span>
+              </div>
+              <div class="gen-note">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                <span>配置以 UTF-8 安全的 Base64 编码后放入 <code>config</code> 参数；点击「导入到 App」将唤起已安装的呼叫转移排班助手。</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 页脚 -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <svg class="brand-logo" viewBox="0 0 512 512" aria-hidden="true">
+          <defs>
+            <linearGradient id="lgf" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#2563EB"/>
+              <stop offset="100%" stop-color="#0EA5E9"/>
+            </linearGradient>
+          </defs>
+          <rect width="512" height="512" rx="116" fill="url(#lgf)"/>
+          <path d="M96 200 C 160 160, 224 240, 288 200 S 416 160, 448 184" fill="none" stroke="#fff" stroke-opacity="0.85" stroke-width="34" stroke-linecap="round"/>
+          <path d="M96 264 C 160 224, 224 304, 288 264 S 416 224, 448 248" fill="none" stroke="#fff" stroke-opacity="0.85" stroke-width="34" stroke-linecap="round"/>
+          <path d="M96 328 C 160 288, 224 368, 288 328 S 416 288, 448 312" fill="none" stroke="#fff" stroke-opacity="0.85" stroke-width="34" stroke-linecap="round"/>
+        </svg>
+        <span>呼叫转移排班助手</span>
+      </div>
+      <div class="footer-meta">
+        基于 Shizuku · 无 Root 自动呼叫转移 · Apache 2.0
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/AutoPhone-Org/call-forward-scheduler" rel="noopener">GitHub 仓库</a>
+        <a href="#editor">配置导入</a>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script src="assets/js/editor.js"></script>
+</body>
+</html>

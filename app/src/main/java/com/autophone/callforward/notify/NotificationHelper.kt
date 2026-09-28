@@ -84,4 +84,32 @@ class NotificationHelper(private val context: Context) {
             // Android 13+ 未授予 POST_NOTIFICATIONS 时忽略
         }
     }
+
+    /** 发送排班配置导入成功通知。 */
+    fun notifyImportSuccess(peopleCount: Int, rosterDays: Int) {
+        val title = context.getString(R.string.import_success_notif_title)
+        val text = context.getString(R.string.import_success, peopleCount, rosterDays)
+
+        val contentIntent = PendingIntent.getActivity(
+            context, 1,
+            Intent(context, MainActivity::class.java),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val notification = NotificationCompat.Builder(context, CHANNEL_SWITCH)
+            .setSmallIcon(android.R.drawable.stat_notify_sync)
+            .setContentTitle(title)
+            .setContentText(text)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(text))
+            .setContentIntent(contentIntent)
+            .setAutoCancel(true)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .build()
+
+        try {
+            NotificationManagerCompat.from(context).notify(NOTIF_ID_BASE + 1, notification)
+        } catch (e: SecurityException) {
+            // Android 13+ 未授予 POST_NOTIFICATIONS 时忽略
+        }
+    }
 }

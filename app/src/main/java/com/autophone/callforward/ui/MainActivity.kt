@@ -1,13 +1,16 @@
 package com.autophone.callforward.ui
 
 import android.os.Bundle
+import android.content.Intent
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Spinner
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.autophone.callforward.R
 import com.autophone.callforward.data.RosterStore
+import com.autophone.callforward.deeplink.DeepLinkImporter
 import com.autophone.callforward.executor.CallForwardExecutor
 import com.autophone.callforward.model.ForwardType
 import com.autophone.callforward.notify.NotificationHelper
@@ -30,6 +33,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var grantButton: Button
     private lateinit var setButton: Button
     private lateinit var cancelButton: Button
+    private lateinit var peopleEntryButton: Button
+    private lateinit var rosterEntryButton: Button
 
     private val permissionListener = OnRequestPermissionResultListener { _, grantResult ->
         if (grantResult == android.content.pm.PackageManager.PERMISSION_GRANTED) {
@@ -50,6 +55,8 @@ class MainActivity : AppCompatActivity() {
         grantButton = findViewById(R.id.grantButton)
         setButton = findViewById(R.id.setButton)
         cancelButton = findViewById(R.id.cancelButton)
+        peopleEntryButton = findViewById(R.id.peopleEntryButton)
+        rosterEntryButton = findViewById(R.id.rosterEntryButton)
 
         setupForwardTypeSpinner()
         loadSavedConfig()
@@ -57,9 +64,16 @@ class MainActivity : AppCompatActivity() {
         grantButton.setOnClickListener { requestShizuku() }
         setButton.setOnClickListener { applyForward() }
         cancelButton.setOnClickListener { cancelForward() }
+        peopleEntryButton.setOnClickListener {
+            startActivity(Intent(this, PeopleActivity::class.java))
+        }
+        rosterEntryButton.setOnClickListener {
+            startActivity(Intent(this, RosterActivity::class.java))
+        }
 
         Shizuku.addRequestPermissionResultListener(permissionListener)
         updateStatus()
+        handleImportIntent(intent)
     }
 
     /** 转移类型下拉框 */
@@ -139,6 +153,24 @@ class MainActivity : AppCompatActivity() {
             !perm -> getString(R.string.status_no_permission)
             else -> getString(R.string.status_ready)
         }
+    }
+
+    /** 处理 Deep Link 导入（scheme=callforward, host=import）。 */
+    private fun handleImportIntent(intent: Intent?) {
+        val data = intent?.data ?: return
+        if (data.scheme != "callforward" || data.host != "import") return
+
+        val result = DeepLinkImporter(this).import(data)
+        Toast.makeText(this, result.message, Toast.LENGTH_LONG).show()
+        if (result.success) {
+            notifier.notifyImportSuccess(result.peopleCount, result.rosterDays)
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleImportIntent(intent)
     }
 
     override fun onDestroy() {

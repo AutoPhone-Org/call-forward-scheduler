@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>配置导入说明 · 呼叫转移排班助手</title>
+  <meta name="description" content="呼叫转移排班助手配置导入说明：Deep Link 协议格式、JSON 结构、编码规则与常见问题。" />
+  <meta name="theme-color" content="#2563EB" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='b' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%232563EB'/%3E%3Cstop offset='100%25' stop-color='%230EA5E9'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='116' fill='url(%23b)'/%3E%3Cpath d='M96 200 C 160 160, 224 240, 288 200 S 416 160, 448 184' fill='none' stroke='%23fff' stroke-opacity='.85' stroke-width='34' stroke-linecap='round'/%3E%3Cpath d='M96 264 C 160 224, 224 304, 288 264 S 416 224, 448 248' fill='none' stroke='%23fff' stroke-opacity='.85' stroke-width='34' stroke-linecap='round'/%3E%3Cpath d='M96 328 C 160 288, 224 368, 288 328 S 416 288, 448 312' fill='none' stroke='%23fff' stroke-opacity='.85' stroke-width='34' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <style>
+    .doc {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 48px 24px 96px;
+    }
+    .doc h1 {
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+    .doc .lead {
+      color: var(--muted);
+      font-size: 16px;
+      margin-bottom: 40px;
+    }
+    .doc h2 {
+      font-size: 22px;
+      margin: 36px 0 12px;
+    }
+    .doc p,
+    .doc li {
+      color: var(--ink-2);
+      font-size: 15.5px;
+    }
+    .doc ul {
+      padding-left: 20px;
+    }
+    .doc code {
+      font-family: var(--mono);
+      font-size: 13.5px;
+      background: var(--brand-soft);
+      color: var(--brand-strong);
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+    .doc pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 12px;
+      padding: 18px 20px;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .doc pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    .note {
+      background: var(--brand-soft);
+      border: 1px solid var(--brand-tint);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 20px 0;
+    }
+    .note svg {
+      width: 18px;
+      height: 18px;
+      color: var(--brand);
+      vertical-align: -3px;
+      margin-right: 6px;
+    }
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
+      font-weight: 600;
+    }
+    .back svg {
+      width: 16px;
+      height: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="index.html">
+        <svg class="brand-logo" viewBox="0 0 512 512" aria-hidden="true">
+          <defs>
+            <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#2563EB"/>
+              <stop offset="100%" stop-color="#0EA5E9"/>
+            </linearGradient>
+          </defs>
+          <rect width="512" height="512" rx="116" fill="url(#lg)"/>
+          <path d="M96 200 C 160 160, 224 240, 288 200 S 416 160, 448 184" fill="none" stroke="#fff" stroke-opacity="0.85" stroke-width="34" stroke-linecap="round"/>
+          <path d="M96 264 C 160 224, 224 304, 288 264 S 416 224, 448 248" fill="none" stroke="#fff" stroke-opacity="0.85" stroke-width="34" stroke-linecap="round"/>
+          <path d="M96 328 C 160 288, 224 368, 288 328 S 416 288, 448 312" fill="none" stroke="#fff" stroke-opacity="0.85" stroke-width="34" stroke-linecap="round"/>
+        </svg>
+        <span>呼叫转移排班助手</span>
+      </a>
+      <nav class="nav-links">
+        <a href="index.html#features">功能特性</a>
+        <a href="index.html#editor">配置导入</a>
+        <a class="nav-cta" href="index.html#editor">开始配置</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="doc">
+    <a class="back" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      返回首页
+    </a>
+
+    <h1>配置导入说明</h1>
+    <p class="lead">通过 Deep Link 将网页端录入的人员、转移类型与排班表一键导入 App。</p>
+
+    <h2>Deep Link 协议</h2>
+    <p>App 通过 <code>callforward</code> Scheme 接收配置，链接格式如下：</p>
+    <pre><code>callforward://import?config=&lt;URL 安全的 Base64 编码的 JSON&gt;</code></pre>
+    <p>其中 <code>config</code> 为固定参数名，值为配置 JSON 经 UTF-8 安全 Base64 编码后再 <code>encodeURIComponent</code> 的结果。</p>
+
+    <h2>JSON 结构</h2>
+    <pre><code>{
+  "people": {
+    "姓名": "手机号"
+  },
+  "forwardType": "unconditional",
+  "roster": [
+    {
+      "date": "2026-09-28",
+      "assignments": [
+        { "shift": "白班", "person": "思源" }
+      ]
+    }
+  ]
+}</code></pre>
+    <ul>
+      <li><code>people</code>：姓名到手机号的映射，键为姓名、值为手机号。</li>
+      <li><code>forwardType</code>：转移类型，可选 <code>unconditional</code>（无条件）、<code>busy</code>（遇忙）、<code>noanswer</code>（无应答）、<code>unreachable</code>（不可及）。</li>
+      <li><code>roster</code>：排班表数组，每项含 <code>date</code>（ISO 日期）与 <code>assignments</code>（该日的班次指派）。</li>
+    </ul>
+
+    <h2>班次名称</h2>
+    <p>默认支持以下班次名：全天、白班、夜班、早班、中班、晚班。</p>
+
+    <h2>编码规则</h2>
+    <p>为保证中文等非 ASCII 字符正确传输，需使用 UTF-8 安全的 Base64 编码，推荐实现如下：</p>
+    <pre><code>// JavaScript 端
+var json = JSON.stringify(config);
+var encoded = encodeURIComponent(btoa(unescape(encodeURIComponent(json))));
+var url = "callforward://import?config=" + encoded;</code></pre>
+    <p>App 端将按约定对 <code>config</code> 执行 <code>decodeURIComponent</code> 后 Base64 解码，还原为原始 JSON。</p>
+
+    <div class="note">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      等价方案：也可使用标准 base64url 编码，但必须确保 App 端解码逻辑与此一致。推荐直接使用上述 UTF-8 安全 Base64 方案。
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <span>呼叫转移排班助手</span>
+      </div>
+      <div class="footer-meta">基于 Shizuku · 无 Root 自动呼叫转移 · Apache 2.0</div>
+      <div class="footer-links">
+        <a href="https://github.com/AutoPhone-Org/call-forward-scheduler" rel="noopener">GitHub 仓库</a>
+        <a href="index.html#editor">配置导入</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -158,5 +158,37 @@
             app:iconTint="@color/status_error"
             app:cornerRadius="12dp" />
 
+        <!-- 排班与导入入口 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/entry_section"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/peopleEntryButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/entry_people"
+            app:icon="@drawable/ic_people"
+            app:iconTint="@android:color/white"
+            app:backgroundTint="@color/brand_blue"
+            app:cornerRadius="12dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/rosterEntryButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/entry_roster"
+            app:icon="@drawable/ic_schedule"
+            app:iconTint="@android:color/white"
+            app:backgroundTint="@color/brand_blue"
+            app:cornerRadius="12dp" />
+
     </LinearLayout>
 </ScrollView>

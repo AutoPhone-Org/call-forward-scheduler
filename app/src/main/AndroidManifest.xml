@@ -31,12 +31,30 @@
 
         <activity
             android:name=".ui.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- 配置导入 Deep Link：callforward://import?config=... -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="callforward"
+                    android:host="import" />
+            </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.PeopleActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.RosterActivity"
+            android:exported="false" />
 
         <!-- 重启后重建调度 -->
         <receiver

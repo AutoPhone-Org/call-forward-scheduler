@@ -19,13 +19,15 @@ class SwitchScheduler(private val context: Context) {
      */
     fun scheduleAll(points: List<SwitchPoint>) {
         val am = alarmManager
-        // 简化：清空本 App 的所有闹钟
-        val cancelIntent = Intent(context, SwitchReceiver::class.java)
-        val cancelPi = PendingIntent.getBroadcast(
-            context, 0, cancelIntent,
-            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
-        )
-        cancelPi?.let { am.cancel(it) }
+        // 清理旧闹钟：遍历可能的 requestCode 范围取消，避免残留重复触发
+        val baseIntent = Intent(context, SwitchReceiver::class.java)
+        for (i in 0 until MAX_SCHEDULES) {
+            val pi = PendingIntent.getBroadcast(
+                context, i, baseIntent,
+                PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
+            )
+            pi?.let { am.cancel(it) }
+        }
 
         points.forEachIndexed { index, p ->
             val triggerAt = toEpochMillis(p)
@@ -45,6 +47,11 @@ class SwitchScheduler(private val context: Context) {
                 am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pi)
             }
         }
+    }
+
+    companion object {
+        /** 允许的最大调度节点数（用于清理旧闹钟） */
+        private const val MAX_SCHEDULES = 256
     }
 
     /** 将切换节点转换为绝对时间戳（毫秒） */

@@ -39,4 +39,42 @@
     <string name="notif_success_text">已转给 %1$s（%2$s）</string>
     <string name="notif_fail_title">呼叫转移切换失败</string>
     <string name="notif_fail_text">切换至 %1$s（%2$s）失败</string>
+
+    <!-- 主界面入口 -->
+    <string name="entry_section">排班与导入</string>
+    <string name="entry_people">人员管理</string>
+    <string name="entry_roster">排班管理</string>
+
+    <!-- 人员管理 -->
+    <string name="people_title">人员管理</string>
+    <string name="people_add">新增人员</string>
+    <string name="people_empty">暂无人员，请先点击下方「新增人员」</string>
+    <string name="people_name_hint">请输入姓名</string>
+    <string name="people_phone_hint">请输入手机号</string>
+    <string name="people_delete_title">删除人员</string>
+    <string name="people_delete_confirm">确定删除「%1$s」吗？</string>
+    <string name="people_confirm">确定</string>
+    <string name="people_cancel">取消</string>
+    <string name="people_err_name_empty">请输入姓名</string>
+    <string name="people_err_phone_empty">请输入手机号</string>
+    <string name="people_err_duplicate">该姓名已存在</string>
+
+    <!-- 排班管理 -->
+    <string name="roster_title">排班管理</string>
+    <string name="roster_template_label">倒班模板</string>
+    <string name="roster_date_label">排班日期</string>
+    <string name="roster_date_hint">yyyy-MM-dd</string>
+    <string name="roster_assign_label">班次指派</string>
+    <string name="roster_save">保存排班</string>
+    <string name="roster_err_no_people">请先在「人员管理」中新增人员</string>
+    <string name="roster_err_people_not_enough">模板「%1$s」需要 %2$d 人，当前仅有 %3$d 人</string>
+    <string name="roster_err_date_invalid">日期格式无效，请使用 yyyy-MM-dd</string>
+    <string name="roster_err_assign_incomplete">请为所有班次选择当班人</string>
+    <string name="roster_saved">已保存 %1$s 的排班</string>
+
+    <!-- 导入 -->
+    <string name="import_success">导入成功：%1$d 人，%2$d 天排班</string>
+    <string name="import_success_notif_title">排班配置导入成功</string>
+    <string name="import_err_no_config">导入失败：缺少 config 参数</string>
+    <string name="import_err_parse">导入失败：%1$s</string>
 </resources>
