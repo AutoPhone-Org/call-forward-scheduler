@@ -174,6 +174,9 @@
       cells.push(
         '<div class="cal-cell' +
           (isToday ? " cal-cell-today" : "") +
+          (assignments.length > 0 ? " cal-cell-has-event" : "") +
+          '" data-date="' +
+          dateISO +
           '"><span class="cal-daynum">' +
           d +
           "</span><div class='cal-events'>" +
@@ -198,11 +201,21 @@
     calGrid.innerHTML = headHTML + cells.join("");
   }
 
-  /* ---------- 月份导航 ---------- */
+  /* ---------- 月份导航（带动画） ---------- */
+
+  function renderWithAnimation(direction) {
+    // direction: -1 向左切(上月)，1 向右切(下月)，0 无方向（首次/今日）
+    calGrid.classList.remove("cal-anim-left", "cal-anim-right");
+    if (direction !== 0) {
+      void calGrid.offsetWidth; // 强制重排
+      calGrid.classList.add(direction < 0 ? "cal-anim-right" : "cal-anim-left");
+    }
+    renderCalendar();
+  }
 
   function shiftMonth(delta) {
     viewDate.setMonth(viewDate.getMonth() + delta);
-    renderCalendar();
+    renderWithAnimation(delta);
   }
 
   calPrev.addEventListener("click", function () {
@@ -214,13 +227,63 @@
   calToday.addEventListener("click", function () {
     viewDate = new Date();
     viewDate.setDate(1);
-    renderCalendar();
+    renderWithAnimation(0);
   });
+
+  /* ---------- 点击格子：定位到编辑器对应排班日 ---------- */
+
+  calGrid.addEventListener("click", function (e) {
+    var cell = e.target.closest(".cal-cell[data-date]");
+    if (!cell) return;
+    var dateISO = cell.getAttribute("data-date");
+    if (window.focusDay && window.focusDay(dateISO)) {
+      // 定位成功后平滑滚动到编辑器区域
+      var editor = document.getElementById("editor");
+      if (editor) editor.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  });
+
+  /* ---------- 拖拽切换月份（触摸/鼠标横滑） ---------- */
+
+  var dragStartX = null;
+  var dragStartY = null;
+  var dragging = false;
+
+  calGrid.addEventListener("touchstart", function (e) {
+    var t = e.touches[0];
+    dragStartX = t.clientX;
+    dragStartY = t.clientY;
+    dragging = true;
+  }, { passive: true });
+
+  calGrid.addEventListener("touchmove", function (e) {
+    // 阻止垂直滚动时的误触发
+    if (!dragging) return;
+    var t = e.touches[0];
+    var dx = t.clientX - dragStartX;
+    var dy = t.clientY - dragStartY;
+    if (Math.abs(dx) > Math.abs(dy)) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  calGrid.addEventListener("touchend", function (e) {
+    if (!dragging) return;
+    dragging = false;
+    var t = e.changedTouches[0];
+    var dx = t.clientX - dragStartX;
+    var dy = t.clientY - dragStartY;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      shiftMonth(dx > 0 ? -1 : 1);
+    }
+    dragStartX = null;
+    dragStartY = null;
+  }, { passive: true });
 
   /* ---------- 暴露给 editor.js ---------- */
 
   window.renderCalendar = renderCalendar;
 
   // 首次空渲染
-  renderCalendar();
+  renderWithAnimation(0);
 })();

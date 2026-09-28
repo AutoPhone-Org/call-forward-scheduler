@@ -10,6 +10,10 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
+    <!-- 安装 APK（Android 8.0+ 未知来源） -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <!-- Shizuku 前置检查 -->
     <uses-permission android:name="moe.shizuku.manager.permission.API_V23" />
 
@@ -69,5 +73,16 @@
         <receiver
             android:name=".scheduler.SwitchReceiver"
             android:exported="false" />
+
+        <!-- APK 安装 FileProvider（Android 7.0+） -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 </manifest>

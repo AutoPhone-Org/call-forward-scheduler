@@ -350,6 +350,29 @@
     document.body.removeChild(ta);
   }
 
+  /* ---------- 暴露给日历：定位到某天 ---------- */
+
+  function focusDay(dateISO) {
+    var target = null;
+    rosterList.querySelectorAll(".day-card").forEach(function (card) {
+      var input = card.querySelector(".day-date");
+      if (input && input.value === dateISO) {
+        target = card;
+      }
+    });
+    if (!target) return false;
+
+    // 平滑滚动到该排班日卡片
+    target.scrollIntoView({ behavior: "smooth", block: "center" });
+    // 高亮闪烁提示
+    target.classList.remove("day-flash");
+    void target.offsetWidth; // 强制重排以重启动画
+    target.classList.add("day-flash");
+    return true;
+  }
+
+  window.focusDay = focusDay;
+
   /* ---------- 初始化示例数据 ---------- */
 
   function init() {

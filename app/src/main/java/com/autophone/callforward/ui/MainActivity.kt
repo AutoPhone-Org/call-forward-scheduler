@@ -77,18 +77,46 @@ class MainActivity : AppCompatActivity() {
         checkUpdate()
     }
 
-    /** 异步检查更新；有新版时弹提示。 */
+    /** 异步检查更新；有新版时弹下载安装对话框。 */
     private fun checkUpdate() {
         Thread {
-            val info = com.autophone.callforward.update.UpdateChecker(this).check()
+            val checker = com.autophone.callforward.update.UpdateChecker(this)
+            val info = checker.check()
             runOnUiThread {
-                if (info.hasUpdate) {
-                    val msg = getString(
-                        R.string.update_available,
-                        com.autophone.callforward.update.UpdateChecker(this).currentVersion(),
-                        info.latestVersion ?: "",
-                    )
-                    Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+                if (info.hasUpdate && info.downloadUrl != null) {
+                    showUpdateDialog(info.latestVersion ?: "", info.downloadUrl!!)
+                }
+            }
+        }.start()
+    }
+
+    /** 弹出更新对话框，引导下载并安装。 */
+    private fun showUpdateDialog(version: String, downloadUrl: String) {
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.update_dialog_title)
+            .setMessage(getString(R.string.update_dialog_body, version))
+            .setPositiveButton(R.string.update_download) { _, _ ->
+                startDownload(downloadUrl, version)
+            }
+            .setNegativeButton(R.string.update_cancel, null)
+            .show()
+    }
+
+    /** 后台下载 APK，完成后引导安装。 */
+    private fun startDownload(downloadUrl: String, tag: String) {
+        val downloader = com.autophone.callforward.update.ApkDownloader(this)
+        val installer = com.autophone.callforward.update.ApkInstaller(this)
+
+        Toast.makeText(this, R.string.update_downloading, Toast.LENGTH_SHORT).show()
+
+        Thread {
+            val result = downloader.download(downloadUrl, tag, null)
+            runOnUiThread {
+                if (result.success && result.file != null) {
+                    Toast.makeText(this, R.string.update_download_done, Toast.LENGTH_SHORT).show()
+                    installer.install(result.file)
+                } else {
+                    Toast.makeText(this, R.string.update_download_fail, Toast.LENGTH_LONG).show()
                 }
             }
         }.start()
