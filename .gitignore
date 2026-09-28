@@ -1,0 +1,22 @@
+# Gradle
+.gradle/
+build/
+
+# Android
+app/build/
+local.properties
+*.apk
+*.aab
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 签名/密钥
+*.jks
+*.keystore

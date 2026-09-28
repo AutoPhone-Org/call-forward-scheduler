@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#0EA5E9"/>
+    </linearGradient>
+    <linearGradient id="wave" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.5"/>
+      <stop offset="50%" stop-color="#FFFFFF" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.5"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 圆角方形徽章背景（品牌蓝渐变） -->
+  <rect x="0" y="0" width="512" height="512" rx="116" fill="url(#bg)"/>
+
+  <!-- 三条波浪：象征「来电自动转移」的通信流动 -->
+  <path d="M96 200 C 160 160, 224 240, 288 200 S 416 160, 448 184"
+        fill="none" stroke="url(#wave)" stroke-width="34" stroke-linecap="round"/>
+  <path d="M96 264 C 160 224, 224 304, 288 264 S 416 224, 448 248"
+        fill="none" stroke="url(#wave)" stroke-width="34" stroke-linecap="round"/>
+  <path d="M96 328 C 160 288, 224 368, 288 328 S 416 288, 448 312"
+        fill="none" stroke="url(#wave)" stroke-width="34" stroke-linecap="round"/>
+</svg>
