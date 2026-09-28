@@ -66,6 +66,8 @@
     <string name="entry_section">排班与导入</string>
     <string name="entry_people">人员管理</string>
     <string name="entry_roster">排班管理</string>
+    <string name="entry_calendar_sync">日历导入排班</string>
+    <string name="entry_cloud_sync">GitHub Gist 云同步</string>
 
     <!-- 人员管理 -->
     <string name="people_title">人员管理</string>
@@ -80,6 +82,18 @@
     <string name="people_err_name_empty">请输入姓名</string>
     <string name="people_err_phone_empty">请输入手机号</string>
     <string name="people_err_duplicate">该姓名已存在</string>
+
+    <!-- 人员页 CSV 导入导出（SAF） -->
+    <string name="people_import">导入</string>
+    <string name="people_export">导出</string>
+    <string name="csv_import_ok">导入成功：%1$d 人，%2$d 天排班</string>
+    <string name="csv_import_no_data">导入的文件中没有有效数据</string>
+    <string name="csv_export_ok">已导出到所选位置</string>
+    <string name="csv_err_write">导出失败：%1$s</string>
+    <string name="csv_err_read">导入失败：%1$s</string>
+    <string name="csv_err_unknown">未知错误</string>
+    <string name="csv_err_no_stream_out">无法打开输出流</string>
+    <string name="csv_err_no_stream_in">无法打开输入流</string>
 
     <!-- 排班管理 -->
     <string name="roster_title">排班管理</string>
@@ -122,4 +136,35 @@
     <string name="alarm_perm_body">需要精确闹钟权限才能准时切换呼叫转移，请前往系统设置开启「闹钟与提醒」权限</string>
     <string name="alarm_perm_go">去设置</string>
     <string name="alarm_perm_cancel">取消</string>
+
+    <!-- 系统日历导入排班 -->
+    <string name="cal_sync_title">从系统日历导入排班</string>
+    <string name="cal_sync_desc">将读取未来 30 天的系统日历事件（只读），把标题符合「班次 人员名」格式的事件解析为排班，例如「白班 思源」。</string>
+    <string name="cal_sync_format_desc">支持的班次关键字：白班、夜班、早班、中班、晚班、全天；标题不含班次关键字的事件会被跳过。</string>
+    <string name="cal_sync_import_btn">从系统日历导入</string>
+    <string name="cal_sync_preview_label">导入预览</string>
+    <string name="cal_sync_preview">解析到 %1$d 天排班、共 %2$d 个班次指派。新出现的人员将自动加入人员表（手机号留空，可在人员管理中补充）。</string>
+    <string name="cal_sync_apply_btn">确认导入并重建调度</string>
+    <string name="cal_sync_importing">正在读取系统日历…</string>
+    <string name="cal_sync_empty">未来 30 天内没有匹配「班次 人员名」格式的日历事件</string>
+    <string name="cal_sync_permission_denied">未授予日历读取权限，无法导入</string>
+    <string name="cal_sync_err_import">读取日历失败，请确认已授权并重试</string>
+    <string name="cal_sync_err_expand">排班展开失败：存在未知班次或人员，请检查数据</string>
+    <string name="cal_sync_applied">已导入 %1$d 天排班，重建 %2$d 个切换闹钟</string>
+    <string name="cal_sync_done">导入完成</string>
+
+    <!-- GitHub Gist 云同步 -->
+    <string name="cloud_title">GitHub Gist 云同步</string>
+    <string name="cloud_desc">通过 GitHub Gist 在多台设备间同步排班配置。请填写仅含 gist 权限的 PAT（Personal Access Token）；Gist ID 留空时首次上传会自动创建私密 Gist 并回填。公开 Gist 无 PAT 也可恢复。</string>
+    <string name="cloud_pat_hint">GitHub PAT（仅需 gist 权限）</string>
+    <string name="cloud_gist_hint">Gist ID（留空则首次上传自动创建）</string>
+    <string name="cloud_upload_btn">上传到云端</string>
+    <string name="cloud_download_btn">从云端恢复</string>
+    <string name="cloud_uploading">正在上传配置…</string>
+    <string name="cloud_downloading">正在从云端恢复配置…</string>
+    <string name="cloud_upload_ok">上传成功，Gist ID：%1$s</string>
+    <string name="cloud_download_ok">恢复成功：%1$d 人、%2$d 天排班，已重建调度</string>
+    <string name="cloud_err_no_pat">请先填写 GitHub PAT</string>
+    <string name="cloud_err_no_gist">请先填写 Gist ID</string>
+    <string name="cloud_err_fail">同步失败：%1$s</string>
 </resources>

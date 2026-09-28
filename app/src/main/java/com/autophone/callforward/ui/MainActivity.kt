@@ -9,12 +9,14 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.autophone.callforward.R
+import com.autophone.callforward.calendar.CalendarSyncActivity
 import com.autophone.callforward.data.RosterStore
 import com.autophone.callforward.deeplink.DeepLinkImporter
 import com.autophone.callforward.executor.CallForwardExecutor
 import com.autophone.callforward.model.ForwardType
 import com.autophone.callforward.notify.NotificationHelper
 import com.autophone.callforward.scheduler.AlarmPermissionHelper
+import com.autophone.callforward.sync.CloudSyncActivity
 import com.google.android.material.textfield.TextInputEditText
 import rikka.shizuku.Shizuku
 import rikka.shizuku.Shizuku.OnRequestPermissionResultListener
@@ -37,6 +39,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var cancelButton: Button
     private lateinit var peopleEntryButton: Button
     private lateinit var rosterEntryButton: Button
+    private lateinit var calendarSyncEntryButton: Button
+    private lateinit var cloudSyncEntryButton: Button
 
     private val permissionListener = OnRequestPermissionResultListener { _, grantResult ->
         if (grantResult == android.content.pm.PackageManager.PERMISSION_GRANTED) {
@@ -59,6 +63,8 @@ class MainActivity : AppCompatActivity() {
         cancelButton = findViewById(R.id.cancelButton)
         peopleEntryButton = findViewById(R.id.peopleEntryButton)
         rosterEntryButton = findViewById(R.id.rosterEntryButton)
+        calendarSyncEntryButton = findViewById(R.id.calendarSyncEntryButton)
+        cloudSyncEntryButton = findViewById(R.id.cloudSyncEntryButton)
 
         setupForwardTypeSpinner()
         loadSavedConfig()
@@ -71,6 +77,12 @@ class MainActivity : AppCompatActivity() {
         }
         rosterEntryButton.setOnClickListener {
             startActivity(Intent(this, RosterActivity::class.java))
+        }
+        calendarSyncEntryButton.setOnClickListener {
+            startActivity(Intent(this, CalendarSyncActivity::class.java))
+        }
+        cloudSyncEntryButton.setOnClickListener {
+            startActivity(Intent(this, CloudSyncActivity::class.java))
         }
 
         Shizuku.addRequestPermissionResultListener(permissionListener)

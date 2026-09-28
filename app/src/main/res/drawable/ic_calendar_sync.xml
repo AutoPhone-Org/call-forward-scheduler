@@ -1,0 +1,11 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- 日历 + 同步箭头（空心日历，内部双向箭头） -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M7,1h2v2h-2z M15,1h2v2h-2z M3,3h18v18h-18z M5,7h14v12h-14z M8,10.5h5.5v1.5h-5.5z M13,9.5l3.5,1.75 -3.5,1.75z M16,14.5h-5.5v1.5h5.5z M11,17.75l-3.5,-1.75 3.5,-1.75z"/>
+</vector>

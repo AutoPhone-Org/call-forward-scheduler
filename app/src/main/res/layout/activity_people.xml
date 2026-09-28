@@ -39,11 +39,50 @@
         android:paddingStart="12dp"
         android:paddingEnd="12dp" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/peopleImportButton"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="6dp"
+            android:text="@string/people_import"
+            android:textColor="@color/brand_blue"
+            app:cornerRadius="12dp"
+            app:icon="@drawable/ic_import"
+            app:iconTint="@color/brand_blue"
+            app:strokeColor="@color/divider" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/peopleExportButton"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="6dp"
+            android:text="@string/people_export"
+            android:textColor="@color/brand_blue"
+            app:cornerRadius="12dp"
+            app:icon="@drawable/ic_export"
+            app:iconTint="@color/brand_blue"
+            app:strokeColor="@color/divider" />
+
+    </LinearLayout>
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/peopleAddButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
         android:text="@string/people_add"
         app:icon="@drawable/ic_add"
         app:iconTint="@android:color/white"

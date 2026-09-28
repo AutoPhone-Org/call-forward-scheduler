@@ -14,6 +14,9 @@
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- 系统日历排班导入（运行时权限） -->
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+
     <!-- Shizuku 前置检查 -->
     <uses-permission android:name="moe.shizuku.manager.permission.API_V23" />
 
@@ -58,6 +61,14 @@
 
         <activity
             android:name=".ui.RosterActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".calendar.CalendarSyncActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".sync.CloudSyncActivity"
             android:exported="false" />
 
         <!-- 重启后重建调度 -->

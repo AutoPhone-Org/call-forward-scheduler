@@ -190,5 +190,27 @@
             app:backgroundTint="@color/brand_blue"
             app:cornerRadius="12dp" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/calendarSyncEntryButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/entry_calendar_sync"
+            app:icon="@drawable/ic_calendar_sync"
+            app:iconTint="@android:color/white"
+            app:backgroundTint="@color/brand_blue"
+            app:cornerRadius="12dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/cloudSyncEntryButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/entry_cloud_sync"
+            app:icon="@drawable/ic_cloud_sync"
+            app:iconTint="@android:color/white"
+            app:backgroundTint="@color/brand_blue"
+            app:cornerRadius="12dp" />
+
     </LinearLayout>
 </ScrollView>
