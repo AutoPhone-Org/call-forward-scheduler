@@ -14,6 +14,7 @@ import com.autophone.callforward.deeplink.DeepLinkImporter
 import com.autophone.callforward.executor.CallForwardExecutor
 import com.autophone.callforward.model.ForwardType
 import com.autophone.callforward.notify.NotificationHelper
+import com.autophone.callforward.scheduler.AlarmPermissionHelper
 import com.google.android.material.textfield.TextInputEditText
 import rikka.shizuku.Shizuku
 import rikka.shizuku.Shizuku.OnRequestPermissionResultListener
@@ -26,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     private val executor = CallForwardExecutor()
     private lateinit var store: RosterStore
     private lateinit var notifier: NotificationHelper
+    private val alarmPermissionHelper by lazy { AlarmPermissionHelper(this) }
 
     private lateinit var statusText: TextView
     private lateinit var forwardTypeSpinner: Spinner
@@ -47,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         store = RosterStore(this)
-        notifier = NotificationHelper(this)
+        notifier = NotificationHelper(applicationContext)
 
         statusText = findViewById(R.id.statusText)
         forwardTypeSpinner = findViewById(R.id.forwardTypeSpinner)
@@ -75,6 +77,19 @@ class MainActivity : AppCompatActivity() {
         updateStatus()
         handleImportIntent(intent)
         checkUpdate()
+        checkExactAlarmPermission()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        checkExactAlarmPermission()
+    }
+
+    /** 检查精确闹钟权限；Android 12+ 未授权时引导用户去设置页开启。 */
+    private fun checkExactAlarmPermission() {
+        if (alarmPermissionHelper.needsExactAlarmPermission()) {
+            alarmPermissionHelper.showPermissionDialog(this)
+        }
     }
 
     /** 异步检查更新；有新版时弹下载安装对话框。 */
@@ -110,13 +125,23 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, R.string.update_downloading, Toast.LENGTH_SHORT).show()
 
         Thread {
-            val result = downloader.download(downloadUrl, tag, null)
+            val progressCallback = object : com.autophone.callforward.update.ApkDownloader.ProgressCallback {
+                override fun onProgress(downloaded: Long, total: Long) {
+                    val percent = if (total > 0) {
+                        ((downloaded * 100) / total).toInt().coerceIn(0, 100)
+                    } else {
+                        0
+                    }
+                    notifier.notifyDownloadProgress(percent)
+                }
+            }
+            val result = downloader.download(downloadUrl, tag, progressCallback)
             runOnUiThread {
                 if (result.success && result.file != null) {
-                    Toast.makeText(this, R.string.update_download_done, Toast.LENGTH_SHORT).show()
+                    notifier.notifyDownloadDone(result.file)
                     installer.install(result.file)
                 } else {
-                    Toast.makeText(this, R.string.update_download_fail, Toast.LENGTH_LONG).show()
+                    notifier.notifyDownloadFail()
                 }
             }
         }.start()

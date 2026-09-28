@@ -17,4 +17,9 @@
     <!-- 分隔/描边 -->
     <color name="divider">#E5E7EB</color>
     <color name="surface_soft">#F9FAFB</color>
+
+    <!-- 月历 -->
+    <color name="cal_today_bg">@color/brand_blue</color>
+    <color name="cal_scheduled_bg">@color/brand_blue_soft</color>
+    <color name="cal_cell_bg">#FFFFFF</color>
 </resources>
