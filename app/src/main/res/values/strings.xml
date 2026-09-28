@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">呼叫转移排班助手</string>
+    <string name="subtitle">基于 Shizuku 的定时倒班自动呼叫转移</string>
+
+    <string name="status_label">当前状态</string>
+    <string name="status_init">未初始化</string>
+    <string name="status_not_running">Shizuku 未运行</string>
+    <string name="status_no_permission">Shizuku 已运行，但未授权本 App</string>
+    <string name="status_ready">Shizuku 就绪，可执行呼叫转移</string>
+    <string name="status_grant_missing">未检测到 Shizuku，请先安装并启动 Shizuku</string>
+
+    <string name="action_section">操作</string>
+    <string name="grant_btn">授权 Shizuku</string>
+    <string name="set_btn">设置转移给思源（13033696831）</string>
+    <string name="cancel_btn">取消全部转移</string>
 </resources>

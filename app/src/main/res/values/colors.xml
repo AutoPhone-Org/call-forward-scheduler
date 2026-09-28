@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 品牌配色（呼应 logo 蓝色波浪） -->
+    <color name="brand_blue">#2563EB</color>
+    <color name="brand_blue_soft">#DBEAFE</color>
+    <color name="brand_blue_deep">#1E40AF</color>
+
+    <!-- 文本 -->
+    <color name="text_primary">#1F2937</color>
+    <color name="text_secondary">#6B7280</color>
+
+    <!-- 状态 -->
+    <color name="status_ready">#16A34A</color>
+    <color name="status_warn">#D97706</color>
+    <color name="status_error">#DC2626</color>
+
+    <!-- 分隔/描边 -->
+    <color name="divider">#E5E7EB</color>
+    <color name="surface_soft">#F9FAFB</color>
+</resources>

@@ -10,12 +10,9 @@ import rikka.shizuku.Shizuku
 import rikka.shizuku.Shizuku.OnRequestPermissionResultListener
 
 /**
- * 主界面（MVP 阶段）。
+ * 主界面。
  *
- * TODO：完整 UI 见 PRD §9，此处先实现最小可运行闭环：
- *  - 显示 Shizuku 授权状态
- *  - 一键取消转移
- *  - 用示例号（思源 13033696831）设置转移
+ * 白色背景主题，操作区使用带图标按钮（Material 3）。
  */
 class MainActivity : AppCompatActivity() {
 
@@ -27,7 +24,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var setButton: Button
     private lateinit var cancelButton: Button
 
-    private val permissionListener = OnRequestPermissionResultListener { requestCode, grantResult ->
+    private val permissionListener = OnRequestPermissionResultListener { _, grantResult ->
         if (grantResult == android.content.pm.PackageManager.PERMISSION_GRANTED) {
             updateStatus()
         }
@@ -52,7 +49,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun requestShizuku() {
         if (!Shizuku.pingBinder()) {
-            statusText.text = "未检测到 Shizuku，请先安装并启动 Shizuku"
+            statusText.text = getString(R.string.status_grant_missing)
             return
         }
         if (Shizuku.isPreV11() || Shizuku.getVersion() < 11) return
@@ -66,14 +63,14 @@ class MainActivity : AppCompatActivity() {
     private fun setTestForward() {
         Thread {
             val r = executor.setForward(TEST_PHONE)
-            runOnUiThread { statusText.text = "设置结果：${r.message}" }
+            runOnUiThread { statusText.text = r.message }
         }.start()
     }
 
     private fun cancelForward() {
         Thread {
             val r = executor.cancelAll()
-            runOnUiThread { statusText.text = "取消结果：${r.message}" }
+            runOnUiThread { statusText.text = r.message }
         }.start()
     }
 
@@ -81,9 +78,9 @@ class MainActivity : AppCompatActivity() {
         val ready = executor.isReady
         val perm = Shizuku.checkSelfPermission() == android.content.pm.PackageManager.PERMISSION_GRANTED
         statusText.text = when {
-            !ready -> "Shizuku 未运行"
-            !perm -> "Shizuku 已运行，但未授权本 App"
-            else -> "Shizuku 就绪，可执行呼叫转移"
+            !ready -> getString(R.string.status_not_running)
+            !perm -> getString(R.string.status_no_permission)
+            else -> getString(R.string.status_ready)
         }
     }
 

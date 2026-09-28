@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.CallForward" parent="Theme.Material3.DayNight.NoActionBar" />
+    <!-- 白色背景主题（Material 3 Light），主色使用品牌蓝，呼应 logo -->
+    <style name="Theme.CallForward" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/brand_blue</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="colorPrimaryContainer">@color/brand_blue_soft</item>
+        <item name="colorOnPrimaryContainer">@color/brand_blue_deep</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="colorSurface">@android:color/white</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorOnBackground">@color/text_primary</item>
+        <item name="android:statusBarColor">@android:color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
 </resources>
