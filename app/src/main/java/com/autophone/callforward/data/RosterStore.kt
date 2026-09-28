@@ -104,6 +104,33 @@ class RosterStore(private val context: Context) {
         return map
     }
 
+    // ---------- AI 排班配置（apiKey 加密存储） ----------
+
+    /** 保存 AI 配置：baseUrl / model 明文，apiKey 加密 */
+    fun saveAiConfig(baseUrl: String, apiKey: String, model: String) {
+        saveSetting(KEY_AI_BASE_URL, baseUrl.trim())
+        saveSetting(KEY_AI_MODEL, model.trim())
+        val key = apiKey.trim()
+        if (key.isBlank()) {
+            saveSetting(KEY_AI_API_KEY, "")
+        } else {
+            saveSetting(KEY_AI_API_KEY, com.autophone.callforward.crypto.TokenCryptor.encrypt(key))
+        }
+    }
+
+    /** 读取 AI baseUrl */
+    fun loadAiBaseUrl(): String = getSetting(KEY_AI_BASE_URL, "https://api.openai.com/v1")
+
+    /** 读取 AI model */
+    fun loadAiModel(): String = getSetting(KEY_AI_MODEL, "gpt-4o-mini")
+
+    /** 读取 AI apiKey（解密）；未配置返回空串 */
+    fun loadAiApiKey(): String {
+        val stored = getSetting(KEY_AI_API_KEY, "")
+        if (stored.isBlank()) return ""
+        return com.autophone.callforward.crypto.TokenCryptor.decrypt(stored)
+    }
+
     fun loadPeople(): Map<String, Person> {
         val raw = sp.getString("data", null) ?: return emptyMap()
         val people = JSONObject(raw).getJSONObject("people")
@@ -127,5 +154,11 @@ class RosterStore(private val context: Context) {
             list += DayRoster(d.getString("date"), asgs)
         }
         return list
+    }
+
+    private companion object {
+        const val KEY_AI_BASE_URL = "ai_base_url"
+        const val KEY_AI_API_KEY = "ai_api_key"
+        const val KEY_AI_MODEL = "ai_model"
     }
 }

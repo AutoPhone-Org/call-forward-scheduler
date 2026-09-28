@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var peopleEntryButton: Button
     private lateinit var rosterEntryButton: Button
     private lateinit var shiftTimesEntryButton: Button
+    private lateinit var aiScheduleEntryButton: Button
     private lateinit var calendarSyncEntryButton: Button
     private lateinit var cloudSyncEntryButton: Button
 
@@ -65,6 +66,7 @@ class MainActivity : AppCompatActivity() {
         peopleEntryButton = findViewById(R.id.peopleEntryButton)
         rosterEntryButton = findViewById(R.id.rosterEntryButton)
         shiftTimesEntryButton = findViewById(R.id.shiftTimesEntryButton)
+        aiScheduleEntryButton = findViewById(R.id.aiScheduleEntryButton)
         calendarSyncEntryButton = findViewById(R.id.calendarSyncEntryButton)
         cloudSyncEntryButton = findViewById(R.id.cloudSyncEntryButton)
 
@@ -82,6 +84,9 @@ class MainActivity : AppCompatActivity() {
         }
         shiftTimesEntryButton.setOnClickListener {
             startActivity(Intent(this, ShiftTimesActivity::class.java))
+        }
+        aiScheduleEntryButton.setOnClickListener {
+            startActivity(Intent(this, AiScheduleActivity::class.java))
         }
         calendarSyncEntryButton.setOnClickListener {
             startActivity(Intent(this, CalendarSyncActivity::class.java))

@@ -223,5 +223,16 @@
             app:iconTint="@color/brand_blue"
             app:cornerRadius="12dp" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/aiScheduleEntryButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/entry_ai_schedule"
+            app:icon="@drawable/ic_forward"
+            app:iconTint="@android:color/white"
+            app:backgroundTint="@color/brand_blue"
+            app:cornerRadius="12dp" />
+
     </LinearLayout>
 </ScrollView>

@@ -67,8 +67,26 @@
     <string name="entry_people">人员管理</string>
     <string name="entry_roster">排班管理</string>
     <string name="entry_shift_times">班次时间设置</string>
+    <string name="entry_ai_schedule">AI 自动排班</string>
     <string name="entry_calendar_sync">日历导入排班</string>
     <string name="entry_cloud_sync">GitHub Gist 云同步</string>
+
+    <!-- AI 自动排班 -->
+    <string name="ai_title">AI 自动排班</string>
+    <string name="ai_desc">接入任意 OpenAI 兼容大模型，根据人员、班次与规则自动生成排班表。API Key 加密存储。</string>
+    <string name="ai_base_url_hint">接口地址（baseUrl，OpenAI 格式）</string>
+    <string name="ai_default_base_url">https://api.openai.com/v1</string>
+    <string name="ai_api_key_hint">API Key（可选，加密存储）</string>
+    <string name="ai_model_hint">模型名称</string>
+    <string name="ai_default_model">gpt-4o-mini</string>
+    <string name="ai_rules_hint">排班规则</string>
+    <string name="ai_default_rules">每天按班次安排值班人员，尽量公平轮换，避免同一人连续值夜班。</string>
+    <string name="ai_generate_btn">生成排班并应用</string>
+    <string name="ai_generating">正在生成排班...</string>
+    <string name="ai_err_config">请填写接口地址与模型名称</string>
+    <string name="ai_err_no_people">请先在「人员管理」中添加人员</string>
+    <string name="ai_generate_ok">已生成 %1$d 天排班并应用</string>
+    <string name="ai_generate_fail">生成失败：%1$s</string>
 
     <!-- 班次时间设置 -->
     <string name="shift_times_title">班次时间设置</string>

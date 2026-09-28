@@ -208,10 +208,16 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
             </button>
           </div>
-          <div class="cal-legend" id="calLegend"></div>
+          <div class="cal-toolbar-side">
+            <div class="cal-view-toggle" id="calViewToggle" role="group" aria-label="日历视图切换">
+              <button class="cal-view-btn is-active" type="button" data-view="month">月视图</button>
+              <button class="cal-view-btn" type="button" data-view="year">年视图</button>
+            </div>
+            <div class="cal-legend" id="calLegend"></div>
+          </div>
         </div>
 
-        <!-- 月视图表格 -->
+        <!-- 月视图表格 / 年视图网格 -->
         <div class="cal-grid" id="calGrid"></div>
       </div>
     </div>

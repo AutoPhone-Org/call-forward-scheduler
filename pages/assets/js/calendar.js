@@ -1,6 +1,7 @@
 /* ==========================================================================
-   呼叫转移排班助手 · 排班日历（月视图）
-   读取编辑器生成的配置（people + roster），以月视图展示每日班次与当班人员。
+   呼叫转移排班助手 · 排班日历（月视图 + 年视图）
+   读取编辑器生成的配置（people + roster），月视图展示每日班次与当班人员，
+   年视图按 12 个月汇总展示有排班的天数、涉及人员与班次。
    配色与编辑器一致：白班=蓝、夜班=深蓝、早/中班=紫、全天=青、晚班=橙。
    ========================================================================== */
 
@@ -13,6 +14,7 @@
   var calPrev = document.getElementById("calPrev");
   var calNext = document.getElementById("calNext");
   var calToday = document.getElementById("calToday");
+  var calViewToggle = document.getElementById("calViewToggle");
 
   var WEEKDAYS = ["一", "二", "三", "四", "五", "六", "日"];
 
@@ -33,6 +35,12 @@
   // 当前展示的月份（Date 对象，取每月 1 日）
   var viewDate = new Date();
   viewDate.setDate(1);
+
+  // 当前展示的年份（年视图用）
+  var viewYear = viewDate.getFullYear();
+
+  // 视图模式："month" | "year"
+  var viewMode = "month";
 
   // 最新配置缓存
   var latestConfig = { people: {}, roster: [] };
@@ -73,11 +81,20 @@
     calLegend.innerHTML = html;
   }
 
+  // 收集配置中出现过的班次（去重，保持首次出现顺序）
+  function collectShifts(roster) {
+    var seen = [];
+    roster.forEach(function (day) {
+      (day.assignments || []).forEach(function (a) {
+        if (a.shift && seen.indexOf(a.shift) < 0) seen.push(a.shift);
+      });
+    });
+    return seen;
+  }
+
   /* ---------- 月视图渲染 ---------- */
 
-  function renderCalendar(config) {
-    latestConfig = config || latestConfig;
-
+  function renderMonth() {
     var people = latestConfig.people || {};
     var roster = latestConfig.roster || [];
 
@@ -91,13 +108,8 @@
     calTitle.textContent =
       viewDate.getFullYear() + " 年 " + (viewDate.getMonth() + 1) + " 月";
 
-    // 收集本月出现过的班次，生成图例
-    var seenShifts = [];
-    roster.forEach(function (day) {
-      (day.assignments || []).forEach(function (a) {
-        if (a.shift && seenShifts.indexOf(a.shift) < 0) seenShifts.push(a.shift);
-      });
-    });
+    // 收集出现过的班次，生成图例
+    var seenShifts = collectShifts(roster);
     if (seenShifts.length === 0) {
       seenShifts = Object.keys(SHIFT_COLORS);
     }
@@ -198,13 +210,156 @@
       }
     }
 
+    calGrid.className = "cal-grid";
     calGrid.innerHTML = headHTML + cells.join("");
   }
 
-  /* ---------- 月份导航（带动画） ---------- */
+  /* ---------- 年视图渲染 ---------- */
+
+  function renderYear() {
+    var roster = latestConfig.roster || [];
+
+    calTitle.textContent = viewYear + " 年";
+
+    // 收集该年出现过的班次，生成图例
+    var yearShifts = collectShifts(
+      roster.filter(function (day) {
+        return String(day.date).slice(0, 4) === String(viewYear);
+      })
+    );
+    if (yearShifts.length === 0) {
+      yearShifts = Object.keys(SHIFT_COLORS);
+    }
+    renderLegend(yearShifts);
+
+    // 按月统计：{ days: Set-like array, people: [], shifts: [] }
+    var months = [];
+    for (var m = 0; m < 12; m++) {
+      months.push({ days: [], people: [], shifts: [] });
+    }
+
+    roster.forEach(function (day) {
+      var date = String(day.date);
+      if (date.slice(0, 4) !== String(viewYear)) return;
+      var monthIdx = parseInt(date.slice(5, 7), 10) - 1;
+      if (monthIdx < 0 || monthIdx > 11) return;
+
+      var bucket = months[monthIdx];
+      (day.assignments || []).forEach(function (a) {
+        if (!a.shift && !a.person) return;
+        if (bucket.days.indexOf(date) < 0) bucket.days.push(date);
+        if (a.person && bucket.people.indexOf(a.person) < 0) {
+          bucket.people.push(a.person);
+        }
+        if (a.shift && bucket.shifts.indexOf(a.shift) < 0) {
+          bucket.shifts.push(a.shift);
+        }
+      });
+    });
+
+    var cards = months
+      .map(function (bucket, idx) {
+        var name = idx + 1;
+        var dayCount = bucket.days.length;
+        var peopleText = bucket.people.join("、");
+        var shiftsHTML = bucket.shifts
+          .map(function (s) {
+            var c = fallbackColor(s);
+            return (
+              '<span class="cal-month-dot" style="background-color:' +
+              c.bg +
+              ';" title="' +
+              escapeHTML(s) +
+              '"></span>'
+            );
+          })
+          .join("");
+
+        var body;
+        if (dayCount === 0) {
+          body = '<div class="cal-month-empty">本月暂无排班</div>';
+        } else {
+          body =
+            '<div class="cal-month-meta">' +
+            '<div class="cal-month-people"><span class="cal-month-label">人员</span>' +
+            '<span class="cal-month-value">' +
+            escapeHTML(peopleText) +
+            "</span></div>" +
+            '<div class="cal-month-shifts"><span class="cal-month-label">班次</span>' +
+            '<span class="cal-month-dots">' +
+            shiftsHTML +
+            "</span></div>" +
+            "</div>";
+        }
+
+        return (
+          '<div class="cal-month-card" data-month="' +
+          pad(name) +
+          '">' +
+          '<div class="cal-month-head">' +
+          '<span class="cal-month-name">' +
+          name +
+          "月</span>" +
+          '<span class="cal-month-days">' +
+          dayCount +
+          " 天有排班</span>" +
+          "</div>" +
+          body +
+          "</div>"
+        );
+      })
+      .join("");
+
+    calGrid.className = "cal-grid cal-year-grid";
+    calGrid.innerHTML = cards;
+  }
+
+  /* ---------- 主入口：按视图模式渲染 ---------- */
+
+  function renderCalendar(config) {
+    latestConfig = config || latestConfig;
+    if (viewMode === "year") {
+      renderYear();
+    } else {
+      renderMonth();
+    }
+  }
+
+  /* ---------- 视图切换 ---------- */
+
+  function setViewMode(mode) {
+    if (mode !== "month" && mode !== "year") return;
+    viewMode = mode;
+
+    // 更新 toggle 高亮
+    var btns = calViewToggle.querySelectorAll(".cal-view-btn");
+    for (var i = 0; i < btns.length; i++) {
+      if (btns[i].getAttribute("data-view") === mode) {
+        btns[i].classList.add("is-active");
+      } else {
+        btns[i].classList.remove("is-active");
+      }
+    }
+
+    // 更新导航按钮语义
+    var inYear = mode === "year";
+    calPrev.setAttribute("title", inYear ? "上一年" : "上月");
+    calNext.setAttribute("title", inYear ? "下一年" : "下月");
+    calToday.textContent = inYear ? "返回今年" : "返回今日";
+
+    renderCalendar();
+  }
+
+  calViewToggle.addEventListener("click", function (e) {
+    var btn = e.target.closest(".cal-view-btn");
+    if (!btn) return;
+    setViewMode(btn.getAttribute("data-view"));
+  });
+
+  /* ---------- 月份/年份导航（带动画） ---------- */
 
   function renderWithAnimation(direction) {
-    // direction: -1 向左切(上月)，1 向右切(下月)，0 无方向（首次/今日）
+    // direction: -1 向左切(上月/上一年)，1 向右切(下月/下一年)，0 无方向（首次/今日）
     calGrid.classList.remove("cal-anim-left", "cal-anim-right");
     if (direction !== 0) {
       void calGrid.offsetWidth; // 强制重排
@@ -218,21 +373,39 @@
     renderWithAnimation(delta);
   }
 
+  function shiftYear(delta) {
+    viewYear += delta;
+    renderWithAnimation(delta);
+  }
+
   calPrev.addEventListener("click", function () {
-    shiftMonth(-1);
+    if (viewMode === "year") shiftYear(-1);
+    else shiftMonth(-1);
   });
   calNext.addEventListener("click", function () {
-    shiftMonth(1);
+    if (viewMode === "year") shiftYear(1);
+    else shiftMonth(1);
   });
   calToday.addEventListener("click", function () {
-    viewDate = new Date();
+    var now = new Date();
+    viewDate = now;
     viewDate.setDate(1);
+    viewYear = now.getFullYear();
     renderWithAnimation(0);
   });
 
-  /* ---------- 点击格子：定位到编辑器对应排班日 ---------- */
+  /* ---------- 点击：定位到编辑器 / 切到该月月视图 ---------- */
 
   calGrid.addEventListener("click", function (e) {
+    if (viewMode === "year") {
+      var card = e.target.closest(".cal-month-card");
+      if (!card) return;
+      var monthIdx = parseInt(card.getAttribute("data-month"), 10) - 1;
+      viewDate = new Date(viewYear, monthIdx, 1);
+      setViewMode("month");
+      return;
+    }
+
     var cell = e.target.closest(".cal-cell[data-date]");
     if (!cell) return;
     var dateISO = cell.getAttribute("data-date");
@@ -243,7 +416,7 @@
     }
   });
 
-  /* ---------- 拖拽切换月份（触摸/鼠标横滑） ---------- */
+  /* ---------- 拖拽切换（触摸/鼠标横滑） ---------- */
 
   var dragStartX = null;
   var dragStartY = null;
@@ -274,7 +447,8 @@
     var dx = t.clientX - dragStartX;
     var dy = t.clientY - dragStartY;
     if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-      shiftMonth(dx > 0 ? -1 : 1);
+      if (viewMode === "year") shiftYear(dx > 0 ? -1 : 1);
+      else shiftMonth(dx > 0 ? -1 : 1);
     }
     dragStartX = null;
     dragStartY = null;
@@ -285,5 +459,5 @@
   window.renderCalendar = renderCalendar;
 
   // 首次空渲染
-  renderWithAnimation(0);
+  setViewMode("month");
 })();
