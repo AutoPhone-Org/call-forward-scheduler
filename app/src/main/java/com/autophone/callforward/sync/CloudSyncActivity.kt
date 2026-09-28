@@ -46,7 +46,7 @@ class CloudSyncActivity : AppCompatActivity() {
 
         store = RosterStore(this)
         manager = GistSyncManager(this, store)
-        migrateLegacyConfig()
+        // 旧版明文令牌在首次 loadToken 时自动迁移为加密存储
 
         platformGroup = findViewById(R.id.platformGroup)
         patInput = findViewById(R.id.cloudPatInput)
@@ -60,22 +60,6 @@ class CloudSyncActivity : AppCompatActivity() {
 
         uploadButton.setOnClickListener { runSync(isUpload = true) }
         downloadButton.setOnClickListener { runSync(isUpload = false) }
-    }
-
-    /** 旧版（仅 GitHub）配置键迁移到新的平台前缀键，仅执行一次。 */
-    private fun migrateLegacyConfig() {
-        val legacyToken = store.getSetting(GistSyncManager.LEGACY_KEY_GIST_TOKEN, "")
-        val legacyGist = store.getSetting(GistSyncManager.LEGACY_KEY_GIST_ID, "")
-        if (legacyToken.isNotBlank() || legacyGist.isNotBlank()) {
-            if (manager.loadToken(GistSyncManager.SyncPlatform.GITHUB).isBlank()) {
-                manager.saveConfig(
-                    GistSyncManager.SyncPlatform.GITHUB, legacyToken, legacyGist
-                )
-            }
-            // 清除旧键，避免重复迁移
-            store.saveSetting(GistSyncManager.LEGACY_KEY_GIST_TOKEN, "")
-            store.saveSetting(GistSyncManager.LEGACY_KEY_GIST_ID, "")
-        }
     }
 
     /** 按当前平台回填已保存的配置。 */

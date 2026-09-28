@@ -2,6 +2,7 @@ package com.autophone.callforward.sync
 
 import android.content.Context
 import android.util.Log
+import com.autophone.callforward.crypto.TokenCryptor
 import com.autophone.callforward.data.RosterStore
 import com.autophone.callforward.model.Assignment
 import com.autophone.callforward.model.DayRoster
@@ -24,9 +25,12 @@ import java.net.URL
  * GitCode 实测 `/api/v5/gists` 返回 404（无 Gist 功能），暂不支持；
  * 如需 GitCode 可基于其仓库文件 API 另行实现（见 README 待办）。
  *
- * 配置按平台隔离持久化（[keyOf] 生成平台前缀键）：
- *  - `<platform>_token`：访问令牌（敏感，不落日志）
- *  - `<platform>_gist_id`：Gist ID，为空时首次上传自动创建私密 gist 并回存
+ * 安全：访问令牌经 [TokenCryptor]（Keystore AES-256-GCM）加密后存于独立
+ * 的 secure prefs 文件（并排除在云备份之外），**不以明文落盘**；
+ * 旧版本存于 roster prefs 的明文令牌会在首次访问时自动迁移并清除。
+ * 配置按平台隔离（[keyOf] 生成平台前缀键）：
+ *  - `<platform>_token`：访问令牌密文
+ *  - `<platform>_gist_id`：Gist ID（非敏感，明文）
  *
  * 所有网络请求均需在子线程调用（内部不做线程切换）。
  */
@@ -46,17 +50,75 @@ class GistSyncManager(
 
     private val appContext = context.applicationContext
 
+    /** 敏感令牌专用存储：独立 prefs 文件，便于整体排除出云备份 */
+    private val securePrefs = appContext.getSharedPreferences(
+        SECURE_PREFS_FILE, Context.MODE_PRIVATE
+    )
+
     // ---------- 平台配置存取 ----------
 
-    fun loadToken(platform: SyncPlatform): String =
-        store.getSetting(keyOf(platform, KEY_SUFFIX_TOKEN), "")
+    /** 读取令牌：解密密文；检测到旧版明文令牌时自动迁移为密文存储。 */
+    fun loadToken(platform: SyncPlatform): String {
+        val key = keyOf(platform, KEY_SUFFIX_TOKEN)
+        val stored = securePrefs.getString(key, "").orEmpty()
+        if (stored.isBlank()) {
+            // 尝试从 roster prefs 的旧键迁移（v0.1.4 及之前版本明文存储）
+            return migrateLegacyToken(platform)
+        }
+        return TokenCryptor.decrypt(stored)
+    }
 
-    fun loadGistId(platform: SyncPlatform): String =
-        store.getSetting(keyOf(platform, KEY_SUFFIX_GIST), "")
+    /** 读取 Gist ID（非敏感，明文） */
+    fun loadGistId(platform: SyncPlatform): String {
+        val stored = securePrefs.getString(keyOf(platform, KEY_SUFFIX_GIST), "").orEmpty()
+        if (stored.isNotBlank()) return stored
+        // 迁移旧版存在 roster prefs 里的 gist id
+        val legacy = store.getSetting(keyOf(platform, KEY_SUFFIX_GIST), "")
+        if (legacy.isNotBlank()) {
+            securePrefs.edit().putString(keyOf(platform, KEY_SUFFIX_GIST), legacy).apply()
+            store.saveSetting(keyOf(platform, KEY_SUFFIX_GIST), "")
+        }
+        return legacy
+    }
 
+    /** 保存令牌（加密落盘）与 Gist ID */
     fun saveConfig(platform: SyncPlatform, token: String, gistId: String) {
-        store.saveSetting(keyOf(platform, KEY_SUFFIX_TOKEN), token.trim())
-        store.saveSetting(keyOf(platform, KEY_SUFFIX_GIST), gistId.trim())
+        saveToken(platform, token)
+        saveGistId(platform, gistId)
+    }
+
+    /** 仅保存令牌（加密） */
+    fun saveToken(platform: SyncPlatform, token: String) {
+        val key = keyOf(platform, KEY_SUFFIX_TOKEN)
+        if (token.isBlank()) {
+            securePrefs.edit().remove(key).apply()
+            return
+        }
+        securePrefs.edit()
+            .putString(key, TokenCryptor.encrypt(token))
+            .apply()
+    }
+
+    /** 仅保存 Gist ID（明文） */
+    fun saveGistId(platform: SyncPlatform, gistId: String) {
+        securePrefs.edit()
+            .putString(keyOf(platform, KEY_SUFFIX_GIST), gistId.trim())
+            .apply()
+    }
+
+    /**
+     * 旧版迁移：v0.1.4 及之前把明文令牌存在 roster prefs（键 `gist_token`）。
+     * 读出后加密写入 secure prefs，并清除所有旧键。
+     */
+    private fun migrateLegacyToken(platform: SyncPlatform): String {
+        val legacyToken = store.getSetting(LEGACY_KEY_GIST_TOKEN, "")
+        if (legacyToken.isBlank()) return ""
+        // 仅在目标平台尚无密文时迁移，避免覆盖用户已重新配置的新令牌
+        saveToken(platform, legacyToken)
+        store.saveSetting(LEGACY_KEY_GIST_TOKEN, "")
+        store.saveSetting(LEGACY_KEY_GIST_ID, "")
+        Log.i(TAG, "已迁移旧版明文令牌为加密存储")
+        return legacyToken
     }
 
     private fun keyOf(platform: SyncPlatform, suffix: String): String =
@@ -280,11 +342,14 @@ class GistSyncManager(
         private const val TIMEOUT_MILLIS = 15000
         private const val MAX_ERR_LEN = 200
 
+        /** 敏感令牌专用 prefs 文件（需排除出云备份） */
+        const val SECURE_PREFS_FILE = "secure_store"
+
         /** 设置键后缀（实际键为 `<platform>_` + 后缀） */
         private const val KEY_SUFFIX_TOKEN = "token"
         private const val KEY_SUFFIX_GIST = "gist_id"
 
-        /** 兼容旧版本：迁移此前仅支持 GitHub 时的配置键 */
+        /** 兼容旧版本：迁移此前仅支持 GitHub 时的明文配置键 */
         const val LEGACY_KEY_GIST_TOKEN = "gist_token"
         const val LEGACY_KEY_GIST_ID = "gist_id"
     }

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+ 的数据提取规则：排除敏感数据 -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="sharedpref" path="secure_store.xml" />
+        <exclude domain="sharedpref" path="roster.xml" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="sharedpref" path="secure_store.xml" />
+        <exclude domain="sharedpref" path="roster.xml" />
+    </device-transfer>
+</data-extraction-rules>

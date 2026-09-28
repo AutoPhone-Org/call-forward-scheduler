@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 11 及以下的全量备份规则：排除敏感数据 -->
+<full-backup-content>
+    <!-- 访问令牌密文（Keystore 密钥不可迁移，备份亦无法解密，仍排除以防万一） -->
+    <exclude domain="sharedpref" path="secure_store.xml" />
+    <!-- 排班数据含人员手机号，避免随云备份泄露 -->
+    <exclude domain="sharedpref" path="roster.xml" />
+</full-backup-content>
