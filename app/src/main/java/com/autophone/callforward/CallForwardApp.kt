@@ -1,13 +1,14 @@
 package com.autophone.callforward
 
 import android.app.Application
+import com.autophone.callforward.notify.NotificationHelper
 
 /**
- * App 入口。
+ * App 入口：初始化通知渠道等全局资源。
  */
 class CallForwardApp : Application() {
     override fun onCreate() {
         super.onCreate()
-        // TODO: 初始化存储、申请 Shizuku 权限、恢复调度
+        NotificationHelper(this).createChannels()
     }
 }

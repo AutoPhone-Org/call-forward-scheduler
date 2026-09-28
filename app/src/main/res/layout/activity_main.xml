@@ -65,7 +65,54 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 操作区标题 -->
+        <!-- 配置区 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/config_section"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp" />
+
+        <!-- 转移类型 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/forward_type_label"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp" />
+
+        <Spinner
+            android:id="@+id/forwardTypeSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp" />
+
+        <!-- 目标号码 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/target_phone_label"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/targetPhoneInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="phone"
+                android:text="@string/default_target_phone" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- 操作区 -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -99,7 +146,7 @@
             app:backgroundTint="@color/brand_blue"
             app:cornerRadius="12dp" />
 
-        <!-- 取消转移（描边样式，弱化次要操作） -->
+        <!-- 取消转移 -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/cancelButton"
             style="@style/Widget.Material3.Button.OutlinedButton"

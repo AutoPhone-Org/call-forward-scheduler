@@ -2,6 +2,7 @@ package com.autophone.callforward.data
 
 import android.content.Context
 import com.autophone.callforward.model.DayRoster
+import com.autophone.callforward.model.ForwardType
 import com.autophone.callforward.model.Person
 import org.json.JSONArray
 import org.json.JSONObject
@@ -16,6 +17,7 @@ class RosterStore(private val context: Context) {
 
     private val sp = context.getSharedPreferences("roster", Context.MODE_PRIVATE)
 
+    /** 保存人员 + 排班表 */
     fun save(people: Map<String, String>, roster: List<DayRoster>) {
         val root = JSONObject()
         val p = JSONObject()
@@ -36,6 +38,29 @@ class RosterStore(private val context: Context) {
         }
         root.put("roster", arr)
         sp.edit().putString("data", root.toString()).apply()
+    }
+
+    /** 保存通用设置项（转移类型、set/get code 等） */
+    fun saveSetting(key: String, value: String) {
+        sp.edit().putString(key, value).apply()
+    }
+
+    fun getSetting(key: String, default: String = ""): String {
+        return sp.getString(key, default) ?: default
+    }
+
+    /** 保存转移类型 */
+    fun saveForwardType(type: ForwardType) {
+        saveSetting("forwardType", type.name)
+    }
+
+    /** 读取转移类型，默认无条件 */
+    fun loadForwardType(): ForwardType {
+        return try {
+            ForwardType.valueOf(getSetting("forwardType", ForwardType.UNCONDITIONAL.name))
+        } catch (e: IllegalArgumentException) {
+            ForwardType.UNCONDITIONAL
+        }
     }
 
     fun loadPeople(): Map<String, Person> {

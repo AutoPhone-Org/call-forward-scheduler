@@ -11,7 +11,32 @@
     <string name="status_grant_missing">未检测到 Shizuku，请先安装并启动 Shizuku</string>
 
     <string name="action_section">操作</string>
+    <string name="config_section">配置</string>
+    <string name="forward_type_label">转移类型</string>
+    <string name="target_phone_label">目标手机号</string>
+    <string name="default_target_phone">13033696831</string>
+
+    <!-- 转移类型 -->
+    <string name="type_unconditional">无条件转移（*21*）</string>
+    <string name="type_busy">遇忙转移（*67*）</string>
+    <string name="type_no_answer">无应答转移（*61*）</string>
+    <string name="type_unreachable">不可及转移（*62*）</string>
+
+    <!-- 错误提示 -->
+    <string name="error_empty_phone">请输入目标手机号</string>
     <string name="grant_btn">授权 Shizuku</string>
-    <string name="set_btn">设置转移给思源（13033696831）</string>
+    <string name="set_btn">应用转移设置</string>
     <string name="cancel_btn">取消全部转移</string>
+
+    <!-- 通知渠道 -->
+    <string name="channel_switch">呼叫转移切换</string>
+    <string name="channel_switch_desc">定时切换呼叫转移目标的执行结果</string>
+    <string name="channel_alert">呼叫转移告警</string>
+    <string name="channel_alert_desc">切换失败等需要关注的高优先级告警</string>
+
+    <!-- 通知文案 -->
+    <string name="notif_success_title">呼叫转移已切换</string>
+    <string name="notif_success_text">已转给 %1$s（%2$s）</string>
+    <string name="notif_fail_title">呼叫转移切换失败</string>
+    <string name="notif_fail_text">切换至 %1$s（%2$s）失败</string>
 </resources>
