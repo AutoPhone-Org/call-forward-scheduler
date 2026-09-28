@@ -14,7 +14,6 @@ import com.autophone.callforward.model.Shift
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
 
 /**
  * 自定义班次时间界面：为每个班次设置起止时间（HH:mm）。
@@ -157,16 +156,14 @@ class ShiftTimesActivity : AppCompatActivity() {
         return card
     }
 
-    private fun makeTimeInput(initial: String, hint: String): TextInputLayout {
-        val layout = TextInputLayout(this).apply {
-            setHint(hint)
-        }
-        val edit = TextInputEditText(this).apply {
+    private fun makeTimeInput(initial: String, hint: String): TextInputEditText {
+        return TextInputEditText(this).apply {
             setText(initial)
+            hint = hint
+            textSize = 15f
+            setPadding(dp(12), dp(10), dp(12), dp(10))
             inputType = android.text.InputType.TYPE_CLASS_DATETIME or android.text.InputType.TYPE_DATETIME_VARIATION_TIME
         }
-        layout.addView(edit)
-        return layout
     }
 
     private fun save() {
