@@ -4,6 +4,7 @@ import android.content.Context
 import com.autophone.callforward.model.DayRoster
 import com.autophone.callforward.model.ForwardType
 import com.autophone.callforward.model.Person
+import com.autophone.callforward.model.Shift
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -61,6 +62,46 @@ class RosterStore(private val context: Context) {
         } catch (e: IllegalArgumentException) {
             ForwardType.UNCONDITIONAL
         }
+    }
+
+    /**
+     * 保存自定义班次时间表。
+     * 存储为 JSON：{ "白班": {"start":480,"end":1200}, ... }
+     */
+    fun saveShiftTimes(shifts: Map<String, Shift>) {
+        val root = JSONObject()
+        shifts.forEach { (name, s) ->
+            root.put(name, JSONObject().put("start", s.startMinute).put("end", s.endMinute))
+        }
+        sp.edit().putString("shift_times", root.toString()).apply()
+    }
+
+    /**
+     * 读取自定义班次时间表；无自定义时返回空 Map（调用方回退到默认）。
+     * 时长根据起止时间自动重算（跨天自动 +24）。
+     */
+    fun loadShiftTimes(): Map<String, Shift> {
+        val raw = sp.getString("shift_times", null) ?: return emptyMap()
+        val root = try {
+            JSONObject(raw)
+        } catch (e: Exception) {
+            return emptyMap()
+        }
+        val map = mutableMapOf<String, Shift>()
+        root.keys().forEach { name ->
+            val obj = root.optJSONObject(name) ?: return@forEach
+            val start = obj.optInt("start", -1)
+            val end = obj.optInt("end", -1)
+            if (start in 0..(24 * 60 - 1) && end in 0..(24 * 60 - 1)) {
+                map[name] = Shift(
+                    name = name,
+                    startMinute = start,
+                    endMinute = end,
+                    durationHours = Shift.calcDuration(start, end),
+                )
+            }
+        }
+        return map
     }
 
     fun loadPeople(): Map<String, Person> {

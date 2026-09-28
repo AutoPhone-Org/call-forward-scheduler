@@ -20,7 +20,7 @@ class BootReceiver : BroadcastReceiver() {
             android.util.Log.i("CallForward", "BOOT_COMPLETED: 无排班数据，跳过恢复")
             return
         }
-        val points = RosterEngine().expandToSwitchPoints(roster, people)
+        val points = RosterEngine.fromStore(store).expandToSwitchPoints(roster, people)
         SwitchScheduler(context).scheduleAll(points)
         android.util.Log.i("CallForward", "BOOT_COMPLETED: 已恢复 ${points.size} 个切换节点")
     }

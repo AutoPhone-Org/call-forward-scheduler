@@ -23,6 +23,54 @@ data class Shift(
 ) {
     /** 是否为跨天班次（如夜班 20:00 - 次日 08:00） */
     val isOvernight: Boolean get() = endMinute <= startMinute
+
+    /** 开始时间的 HH:mm 文案，如 "08:00" */
+    fun startLabel(): String = minuteToLabel(startMinute)
+
+    /** 结束时间的 HH:mm 文案，如 "20:00" */
+    fun endLabel(): String = minuteToLabel(endMinute)
+
+    /**
+     * 起止时间的完整文案，跨天时自动标注「次日」。
+     * 例：白班 → "08:00-20:00"；夜班 → "20:00-次日08:00"
+     */
+    fun timeRangeLabel(): String {
+        return if (isOvernight) {
+            "${startLabel()}-次日${endLabel()}"
+        } else {
+            "${startLabel()}-${endLabel()}"
+        }
+    }
+
+    companion object {
+        /** 分钟数 → HH:mm */
+        fun minuteToLabel(minute: Int): String {
+            val m = ((minute % 1440) + 1440) % 1440
+            val h = m / 60
+            val mm = m % 60
+            return "%02d:%02d".format(h, mm)
+        }
+
+        /** HH:mm → 分钟数；解析失败返回 null */
+        fun labelToMinute(label: String): Int? {
+            val parts = label.trim().split(":")
+            if (parts.size != 2) return null
+            val h = parts[0].toIntOrNull() ?: return null
+            val m = parts[1].toIntOrNull() ?: return null
+            if (h !in 0..23 || m !in 0..59) return null
+            return h * 60 + m
+        }
+
+        /** 根据起止分钟自动计算时长（小时），跨天自动 +24 */
+        fun calcDuration(startMinute: Int, endMinute: Int): Double {
+            val diff = if (endMinute <= startMinute) {
+                endMinute + 24 * 60 - startMinute
+            } else {
+                endMinute - startMinute
+            }
+            return diff / 60.0
+        }
+    }
 }
 
 /** 某一天内的一个排班指派：某个班次由某人值守 */

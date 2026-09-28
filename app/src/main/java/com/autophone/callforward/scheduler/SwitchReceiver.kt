@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import com.autophone.callforward.executor.CallForwardExecutor
 import com.autophone.callforward.notify.NotificationHelper
+import com.autophone.callforward.util.AppLog
 
 /**
  * 切换节点触发接收器：到点执行呼叫转移，并通过通知栏反馈结果。
@@ -22,7 +23,15 @@ class SwitchReceiver : BroadcastReceiver() {
         Thread {
             val executor = CallForwardExecutor()
             val result = executor.setForward(phone)
-            android.util.Log.i("CallForward", "切换→$person($phone): ${result.message}")
+            AppLog.section(
+                "切换呼叫转移",
+                mapOf(
+                    "当班人" to person,
+                    "目标号码" to phone,
+                    "结果" to (if (result.success) "成功" else "失败"),
+                    "详情" to result.message,
+                )
+            )
             notifier.notifySwitchResult(person, phone, result.success, result.message)
         }.start()
     }

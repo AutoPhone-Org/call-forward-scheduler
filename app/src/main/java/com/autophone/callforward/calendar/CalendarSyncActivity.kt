@@ -130,7 +130,7 @@ class CalendarSyncActivity : AppCompatActivity() {
         Thread {
             // 先展开切换点，成功后再落盘，避免出现「已保存但闹钟未重建」的中间态
             val points = try {
-                RosterEngine().expandToSwitchPoints(roster, peopleMap)
+                RosterEngine.fromStore(store).expandToSwitchPoints(roster, peopleMap)
             } catch (e: Exception) {
                 null
             }

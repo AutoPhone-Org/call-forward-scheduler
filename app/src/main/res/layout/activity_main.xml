@@ -212,5 +212,16 @@
             app:backgroundTint="@color/brand_blue"
             app:cornerRadius="12dp" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/shiftTimesEntryButton"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/entry_shift_times"
+            app:icon="@drawable/ic_schedule"
+            app:iconTint="@color/brand_blue"
+            app:cornerRadius="12dp" />
+
     </LinearLayout>
 </ScrollView>

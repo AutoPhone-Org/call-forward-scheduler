@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/shift_times_title"
+            android:textColor="@color/text_primary"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:lineSpacingExtra="3dp"
+            android:text="@string/shift_times_desc"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp" />
+
+        <!-- 班次时间列表（动态生成） -->
+        <LinearLayout
+            android:id="@+id/shiftTimesContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical" />
+
+        <!-- 保存 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/shiftTimesSaveButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/shift_times_save"
+            app:icon="@drawable/ic_schedule"
+            app:iconTint="@android:color/white"
+            app:backgroundTint="@color/brand_blue"
+            app:cornerRadius="12dp" />
+
+    </LinearLayout>
+</ScrollView>

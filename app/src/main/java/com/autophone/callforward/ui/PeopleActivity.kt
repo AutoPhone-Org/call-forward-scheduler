@@ -209,7 +209,7 @@ class PeopleActivity : AppCompatActivity() {
     private fun rebuildSchedule(mergedPeople: Map<String, String>, roster: List<DayRoster>) {
         try {
             val peopleMap = mergedPeople.mapValues { (name, phone) -> Person(name, phone) }
-            val points = RosterEngine().expandToSwitchPoints(roster, peopleMap)
+            val points = RosterEngine.fromStore(store).expandToSwitchPoints(roster, peopleMap)
             SwitchScheduler(this).scheduleAll(points)
         } catch (_: Exception) {
             // 排班展开失败（如班次/人员无法识别）不影响数据导入，调度保持原状

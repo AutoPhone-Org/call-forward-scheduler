@@ -100,7 +100,7 @@ class CloudSyncActivity : AppCompatActivity() {
                     // 恢复后立即重建调度
                     val people = store.loadPeople()
                     val roster = store.loadRoster()
-                    val points = RosterEngine().expandToSwitchPoints(roster, people)
+                    val points = RosterEngine.fromStore(store).expandToSwitchPoints(roster, people)
                     SwitchScheduler(this).scheduleAll(points)
                     SyncResult(
                         true,

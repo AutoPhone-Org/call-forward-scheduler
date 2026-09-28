@@ -177,7 +177,7 @@ class RosterActivity : AppCompatActivity() {
         // 持久化 + 重建调度
         store.save(people.mapValues { it.value.phone }, roster)
 
-        val points = RosterEngine().expandToSwitchPoints(roster, people)
+        val points = RosterEngine.fromStore(store).expandToSwitchPoints(roster, people)
         SwitchScheduler(this).scheduleAll(points)
 
         toast(getString(R.string.roster_saved, date))

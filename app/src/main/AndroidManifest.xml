@@ -66,6 +66,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".ui.ShiftTimesActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".calendar.CalendarSyncActivity"
             android:exported="false" />
 

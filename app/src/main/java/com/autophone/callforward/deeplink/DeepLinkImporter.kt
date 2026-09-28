@@ -99,7 +99,7 @@ class DeepLinkImporter(private val context: Context) {
 
         // 重建调度
         val peopleMap = people.mapValues { (k, v) -> Person(k, v) }
-        val points = RosterEngine().expandToSwitchPoints(roster, peopleMap)
+        val points = RosterEngine.fromStore(store).expandToSwitchPoints(roster, peopleMap)
         SwitchScheduler(context).scheduleAll(points)
 
         return ImportResult(

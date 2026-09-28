@@ -20,6 +20,19 @@ class RosterEngine(
     private val shifts: Map<String, Shift> = DefaultTemplates.DEFAULT_SHIFTS,
 ) {
 
+    companion object {
+        /**
+         * 从存储加载自定义班次时间并覆盖默认，返回配置好的引擎。
+         * 无自定义时间时退回默认（行为与无参构造一致）。
+         */
+        fun fromStore(store: com.autophone.callforward.data.RosterStore): RosterEngine {
+            val custom = store.loadShiftTimes()
+            if (custom.isEmpty()) return RosterEngine()
+            val merged = DefaultTemplates.DEFAULT_SHIFTS + custom
+            return RosterEngine(merged)
+        }
+    }
+
     /**
      * 将一批 [roster] 展开为按时间升序的 [SwitchPoint] 列表。
      * 传入的 roster 需按日期升序。

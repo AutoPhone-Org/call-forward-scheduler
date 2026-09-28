@@ -103,4 +103,39 @@ class RosterEngineTest {
         assertEquals(3, template.peopleCount)
         assertEquals(listOf("早班", "中班", "晚班"), template.shiftNames)
     }
+
+    /** Shift 时间格式化：非跨天与跨天展示 */
+    @Test
+    fun `Shift时间文案跨天标注`() {
+        val day = com.autophone.callforward.model.Shift("白班", 8 * 60, 20 * 60, 12.0)
+        assertEquals("08:00-20:00", day.timeRangeLabel())
+        assert(!day.isOvernight)
+
+        val night = com.autophone.callforward.model.Shift("夜班", 20 * 60, 8 * 60, 12.0)
+        assertEquals("20:00-次日08:00", night.timeRangeLabel())
+        assert(night.isOvernight)
+    }
+
+    /** 自定义班次时间覆盖默认，影响切换节点时刻 */
+    @Test
+    fun `自定义班次时间覆盖默认`() {
+        // 自定义白班为 09:00-18:00
+        val custom = mapOf(
+            "白班" to com.autophone.callforward.model.Shift("白班", 9 * 60, 18 * 60, 9.0),
+        )
+        val engine = RosterEngine(DefaultTemplates.DEFAULT_SHIFTS + custom)
+        val roster = listOf(
+            DayRoster("2026-09-28", listOf(Assignment("白班", "思源")))
+        )
+        val points = engine.expandToSwitchPoints(roster, people)
+        assertEquals(1, points.size)
+        assertEquals(9 * 60, points[0].atMinute) // 自定义 09:00 而非默认 08:00
+    }
+
+    /** 时长计算：跨天自动 +24 */
+    @Test
+    fun `跨天时长自动计算`() {
+        assertEquals(12.0, com.autophone.callforward.model.Shift.calcDuration(20 * 60, 8 * 60), 0.001)
+        assertEquals(8.0, com.autophone.callforward.model.Shift.calcDuration(8 * 60, 16 * 60), 0.001)
+    }
 }
