@@ -10,17 +10,23 @@ import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
+import java.net.URLEncoder
 import java.net.URL
 
 /**
- * GitHub Gist 云同步管理器。
+ * 云同步管理器：支持 GitHub Gist 与 Gitee Gist 双平台。
  *
- * 配置（PAT / Gist ID）通过 [RosterStore.saveSetting] 持久化：
- *  - KEY_GIST_TOKEN：GitHub PAT（仅需 gist scope，敏感信息不落日志）
- *  - KEY_GIST_ID：Gist ID，为空时首次上传会自动创建公开 gist 并回存
+ * 平台差异（实测确认）：
+ *  - GitHub：`https://api.github.com/gists`，认证 `Authorization: token <PAT>`
+ *  - Gitee：`https://gitee.com/api/v5/gists`，认证走 query 参数 `access_token`，
+ *    创建 gist 必须带 `description` 字段（GitHub 无此要求，但带上双方兼容）
  *
- * 上传：PATCH /gists/{id}，写入文件 call-forward-config.json
- * 下载：GET /gists/{id}，解析同结构 JSON 后写回 [RosterStore]
+ * GitCode 实测 `/api/v5/gists` 返回 404（无 Gist 功能），暂不支持；
+ * 如需 GitCode 可基于其仓库文件 API 另行实现（见 README 待办）。
+ *
+ * 配置按平台隔离持久化（[keyOf] 生成平台前缀键）：
+ *  - `<platform>_token`：访问令牌（敏感，不落日志）
+ *  - `<platform>_gist_id`：Gist ID，为空时首次上传自动创建私密 gist 并回存
  *
  * 所有网络请求均需在子线程调用（内部不做线程切换）。
  */
@@ -29,35 +35,53 @@ class GistSyncManager(
     private val store: RosterStore,
 ) {
 
-    private val appContext = context.applicationContext
-
-    /** 读取已配置的 PAT */
-    fun loadToken(): String = store.getSetting(KEY_GIST_TOKEN, "")
-
-    /** 读取已配置的 Gist ID */
-    fun loadGistId(): String = store.getSetting(KEY_GIST_ID, "")
-
-    /** 持久化 PAT 与 Gist ID */
-    fun saveConfig(token: String, gistId: String) {
-        store.saveSetting(KEY_GIST_TOKEN, token.trim())
-        store.saveSetting(KEY_GIST_ID, gistId.trim())
+    /** 同步平台定义 */
+    enum class SyncPlatform(
+        val label: String,
+        val apiBase: String,
+    ) {
+        GITHUB("GitHub Gist", "https://api.github.com"),
+        GITEE("Gitee Gist（码云）", "https://gitee.com/api/v5"),
     }
 
+    private val appContext = context.applicationContext
+
+    // ---------- 平台配置存取 ----------
+
+    fun loadToken(platform: SyncPlatform): String =
+        store.getSetting(keyOf(platform, KEY_SUFFIX_TOKEN), "")
+
+    fun loadGistId(platform: SyncPlatform): String =
+        store.getSetting(keyOf(platform, KEY_SUFFIX_GIST), "")
+
+    fun saveConfig(platform: SyncPlatform, token: String, gistId: String) {
+        store.saveSetting(keyOf(platform, KEY_SUFFIX_TOKEN), token.trim())
+        store.saveSetting(keyOf(platform, KEY_SUFFIX_GIST), gistId.trim())
+    }
+
+    private fun keyOf(platform: SyncPlatform, suffix: String): String =
+        platform.name.lowercase() + "_" + suffix
+
+    // ---------- 上传 / 下载 ----------
+
     /**
-     * 上传 people+roster+forwardType 到 gist 文件 call-forward-config.json。
-     * gistId 为空时自动创建新 gist 并持久化 ID。
+     * 上传 people+roster+forwardType 到 gist 文件 [CONFIG_FILE]。
+     * gistId 为空时自动创建新私密 gist 并持久化 ID。
      */
     @Throws(Exception::class)
-    fun upload(token: String, gistId: String): String {
-        val id = gistId.ifBlank { createGist(token) }
+    fun upload(
+        platform: SyncPlatform,
+        token: String,
+        gistId: String,
+    ): String {
+        val id = gistId.ifBlank { createGist(platform, token) }
         val body = JSONObject().put(
             FILES_KEY, JSONObject().put(
                 CONFIG_FILE, JSONObject().put("content", buildConfigJson())
             )
         )
-        val conn = open(URL("$API_BASE/gists/$id"), "PATCH", token)
-        conn.setRequestProperty("Accept", "application/vnd.github+json")
-        conn.outputStream.use { it.write(body.toString().toByteArray(Charsets.UTF_8)) }
+        val conn = open(platform, URL("${platform.apiBase}/gists/$id"), "PATCH", token)
+        writeBody(conn, body)
         val code = conn.responseCode
         val resp = readStream(conn)
         conn.disconnect()
@@ -65,19 +89,23 @@ class GistSyncManager(
             throw RuntimeException("HTTP $code: ${abbreviate(resp)}")
         }
         if (gistId.isBlank()) {
-            saveConfig(token, id)
+            saveConfig(platform, token, id)
         }
         return id
     }
 
     /**
      * 从 gist 拉取配置并写回 [RosterStore]（people/roster/forwardType）。
-     * 返回 gist ID；公开 gist 无 PAT 也可读取。
+     * 返回 gist ID；公开 gist 无 token 也可读取。
      */
     @Throws(Exception::class)
-    fun download(token: String, gistId: String): String {
-        val conn = open(URL("$API_BASE/gists/$gistId"), "GET", token)
-        conn.setRequestProperty("Accept", "application/vnd.github+json")
+    fun download(
+        platform: SyncPlatform,
+        token: String,
+        gistId: String,
+    ): String {
+        if (gistId.isBlank()) throw RuntimeException("请先填写 Gist ID 或先执行一次上传")
+        val conn = open(platform, URL("${platform.apiBase}/gists/$gistId"), "GET", token)
         val code = conn.responseCode
         val resp = readStream(conn)
         conn.disconnect()
@@ -112,7 +140,7 @@ class GistSyncManager(
         return root.toString()
     }
 
-    /** 从 gist 响应 JSON 中取出 call-forward-config.json 的 content */
+    /** 从 gist 响应 JSON 中取出 [CONFIG_FILE] 的 content */
     private fun extractConfigJson(response: String): String {
         val root = JSONObject(response)
         val files = root.optJSONObject("files")
@@ -167,20 +195,21 @@ class GistSyncManager(
 
     /** gist 为空时首次创建，返回新 gist ID */
     @Throws(Exception::class)
-    private fun createGist(token: String): String {
+    private fun createGist(platform: SyncPlatform, token: String): String {
         if (token.isBlank()) {
-            throw RuntimeException("首次上传需要 PAT 以创建 gist")
+            throw RuntimeException("首次上传需要访问令牌（PAT）以创建 gist")
         }
         val body = JSONObject()
+            // Gitee 创建 gist 必须带 description；GitHub 兼容该字段
+            .put("description", "呼叫转移排班助手配置同步")
             .put("public", false)
             .put(
                 "files", JSONObject().put(
                     CONFIG_FILE, JSONObject().put("content", buildConfigJson())
                 )
             )
-        val conn = open(URL(API_BASE + "/gists"), "POST", token)
-        conn.setRequestProperty("Accept", "application/vnd.github+json")
-        conn.outputStream.use { it.write(body.toString().toByteArray(Charsets.UTF_8)) }
+        val conn = open(platform, URL("${platform.apiBase}/gists"), "POST", token)
+        writeBody(conn, body)
         val code = conn.responseCode
         val resp = readStream(conn)
         conn.disconnect()
@@ -192,17 +221,40 @@ class GistSyncManager(
         return id
     }
 
-    private fun open(url: URL, method: String, token: String): HttpURLConnection {
+    /**
+     * 构造已认证的连接。
+     * GitHub：`Authorization: token <PAT>`；
+     * Gitee：query 参数 `access_token`（官方推荐方式，兼容性最好）。
+     */
+    private fun open(
+        platform: SyncPlatform,
+        target: URL,
+        method: String,
+        token: String,
+    ): HttpURLConnection {
+        val url = if (platform == SyncPlatform.GITEE && token.isNotBlank()) {
+            val sep = if (target.query.isNullOrBlank()) "?" else "&"
+            URL(target.toString() + sep + "access_token=" + URLEncoder.encode(token, "UTF-8"))
+        } else {
+            target
+        }
         val conn = url.openConnection() as HttpURLConnection
         conn.requestMethod = method
         conn.connectTimeout = TIMEOUT_MILLIS
         conn.readTimeout = TIMEOUT_MILLIS
         conn.doOutput = method != "GET"
-        if (token.isNotBlank()) {
-            // Authorization: token <PAT>（不打印到日志）
+        if (token.isNotBlank() && platform == SyncPlatform.GITHUB) {
+            // GitHub 认证头（不打印到日志）
             conn.setRequestProperty("Authorization", "token $token")
         }
+        if (method != "GET") {
+            conn.setRequestProperty("Content-Type", "application/json")
+        }
         return conn
+    }
+
+    private fun writeBody(conn: HttpURLConnection, body: JSONObject) {
+        conn.outputStream.use { it.write(body.toString().toByteArray(Charsets.UTF_8)) }
     }
 
     private fun readStream(conn: HttpURLConnection): String {
@@ -223,16 +275,17 @@ class GistSyncManager(
 
     companion object {
         private const val TAG = "GistSyncManager"
-        private const val API_BASE = "https://api.github.com"
         private const val CONFIG_FILE = "call-forward-config.json"
         private const val FILES_KEY = "files"
         private const val TIMEOUT_MILLIS = 15000
         private const val MAX_ERR_LEN = 200
 
-        /** 设置键：GitHub PAT（敏感，勿打印） */
-        const val KEY_GIST_TOKEN = "gist_token"
+        /** 设置键后缀（实际键为 `<platform>_` + 后缀） */
+        private const val KEY_SUFFIX_TOKEN = "token"
+        private const val KEY_SUFFIX_GIST = "gist_id"
 
-        /** 设置键：Gist ID */
-        const val KEY_GIST_ID = "gist_id"
+        /** 兼容旧版本：迁移此前仅支持 GitHub 时的配置键 */
+        const val LEGACY_KEY_GIST_TOKEN = "gist_token"
+        const val LEGACY_KEY_GIST_ID = "gist_id"
     }
 }

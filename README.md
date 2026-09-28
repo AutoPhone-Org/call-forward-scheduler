@@ -23,6 +23,9 @@
 - **一键取消**：随时 `#21#` 取消全部转移，避免漏接
 - **深链导入**：网页配置后通过 `callforward://import` 一键导入 App
 - **自动更新**：检测新版本，多镜像下载 APK 并引导安装
+- **云端同步**：支持 GitHub Gist 与 Gitee Gist 双平台（国内推荐 Gitee 直连），令牌与 Gist ID 按平台分别保存
+- **CSV 导入导出**：人员与排班表一键备份/恢复（UTF-8 BOM，Excel 直接打开）
+- **系统日历对接**：只读导入日历事件（标题如「白班 思源」）生成排班
 - **通知告警**：切换成功/失败、下载进度均有通知栏提示
 
 ## 技术栈
@@ -93,6 +96,22 @@ gradle wrapper
 - **GitHub Pages**：https://autophone-org.github.io/call-forward-scheduler/ （配置编辑器 + 排班日历，生成深链导入）
 - **GitHub Wiki**：https://github.com/AutoPhone-Org/call-forward-scheduler/wiki （9 页使用文档）
 
+## 云端同步
+
+App 内「云同步」支持双平台，按设备网络环境选择：
+
+| 平台 | API | 适用场景 |
+|------|-----|---------|
+| GitHub Gist | api.github.com | 国际网络环境 |
+| **Gitee Gist（码云）** | gitee.com/api/v5 | 国内直连推荐 |
+
+使用要点：
+- 令牌权限仅需 gist（GitHub 为 PAT，Gitee 为「私人令牌」）
+- Gist ID 留空时首次上传自动创建私密 Gist 并回填
+- 令牌与 Gist ID 按平台分别保存，切换平台自动回填
+- GitCode 实测暂无 Gist 接口，暂不支持（待办中）
+- 同步内容与深链导入格式完全一致，可互相导入
+
 ## 自动发布与更新
 
 - 每次 push `master`，`auto-release.yml` 自动递增 patch 版本（如 `v0.1.2 → v0.1.3`）、打 Tag 并发布 Release，产物为 release APK。
@@ -129,14 +148,16 @@ gradle wrapper
 - [x] 下载进度通知
 - [x] 自动版本递增 + Tag + Release 发布
 - [x] 静态官网（配置编辑器 + 排班日历）+ Wiki 文档
+- [x] CSV 导入导出（人员 + 排班表）
+- [x] 系统日历只读导入排班
+- [x] 云端同步（GitHub Gist / Gitee Gist 双平台）
 
 待办：
 
 - [ ] 实机验证：Shizuku 激活 + `set` code 枚举 + `*21*` 生效
 - [ ] 正式签名 keystore（当前 release 用 debug 签名，仅测试用）
-- [ ] 排班表导入/导出（CSV/JSON）
-- [ ] 对接系统日历作为排班来源
-- [ ] 云端同步 / 多端协作
+- [ ] GitCode 同步后端（其暂无 Gist 接口，需基于仓库文件 API 另行实现）
+- [ ] 云端自动同步（当前为手动上传/恢复）
 
 ## 安全提醒
 

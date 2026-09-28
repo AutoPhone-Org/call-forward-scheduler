@@ -155,16 +155,20 @@
 
     <!-- GitHub Gist 云同步 -->
     <string name="cloud_title">GitHub Gist 云同步</string>
-    <string name="cloud_desc">通过 GitHub Gist 在多台设备间同步排班配置。请填写仅含 gist 权限的 PAT（Personal Access Token）；Gist ID 留空时首次上传会自动创建私密 Gist 并回填。公开 Gist 无 PAT 也可恢复。</string>
-    <string name="cloud_pat_hint">GitHub PAT（仅需 gist 权限）</string>
+    <string name="cloud_desc">通过 Gist 在多台设备间同步排班配置。请填写仅含 gist 权限的访问令牌（GitHub 为 PAT，Gitee 为私人令牌）；Gist ID 留空时首次上传会自动创建私密 Gist 并回填。公开 Gist 无令牌也可恢复。</string>
+    <string name="cloud_platform_label">同步平台</string>
+    <string name="cloud_platform_github">GitHub Gist（国际网络）</string>
+    <string name="cloud_platform_gitee">Gitee Gist（码云，国内直连）</string>
+    <string name="cloud_platform_note">提示：GitCode 实测暂不提供 Gist 接口，暂不支持；令牌与 Gist ID 按平台分别保存。</string>
+    <string name="cloud_pat_hint">访问令牌（仅需 gist 权限）</string>
     <string name="cloud_gist_hint">Gist ID（留空则首次上传自动创建）</string>
     <string name="cloud_upload_btn">上传到云端</string>
     <string name="cloud_download_btn">从云端恢复</string>
     <string name="cloud_uploading">正在上传配置…</string>
     <string name="cloud_downloading">正在从云端恢复配置…</string>
-    <string name="cloud_upload_ok">上传成功，Gist ID：%1$s</string>
+    <string name="cloud_upload_ok">上传成功（%1$s），Gist ID：%2$s</string>
     <string name="cloud_download_ok">恢复成功：%1$d 人、%2$d 天排班，已重建调度</string>
-    <string name="cloud_err_no_pat">请先填写 GitHub PAT</string>
+    <string name="cloud_err_no_pat">请先填写访问令牌</string>
     <string name="cloud_err_no_gist">请先填写 Gist ID</string>
     <string name="cloud_err_fail">同步失败：%1$s</string>
 </resources>
