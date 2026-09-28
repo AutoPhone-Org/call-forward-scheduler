@@ -9,6 +9,7 @@ import com.autophone.callforward.model.Assignment
 import com.autophone.callforward.model.DayRoster
 import com.autophone.callforward.model.ForwardType
 import com.autophone.callforward.model.Person
+import com.autophone.callforward.model.Shift
 import com.autophone.callforward.scheduler.SwitchScheduler
 import org.json.JSONObject
 
@@ -97,6 +98,11 @@ class DeepLinkImporter(private val context: Context) {
         store.save(people, roster)
         store.saveForwardType(type)
 
+        // shifts（可选）：自定义班次名称与起止时间；无该字段时忽略，保持向后兼容
+        parseShifts(root.optJSONArray("shifts"))?.let { shifts ->
+            if (shifts.isNotEmpty()) store.saveShiftTimes(shifts)
+        }
+
         // 重建调度
         val peopleMap = people.mapValues { (k, v) -> Person(k, v) }
         val points = RosterEngine.fromStore(store).expandToSwitchPoints(roster, peopleMap)
@@ -121,6 +127,25 @@ class DeepLinkImporter(private val context: Context) {
             "unreachable" -> ForwardType.UNREACHABLE
             else -> ForwardType.UNCONDITIONAL
         }
+    }
+
+    /**
+     * 解析可选 `shifts` 字段：`[{ "name": "...", "start": "HH:mm", "end": "HH:mm" }]`。
+     * start/end 用 [Shift.labelToMinute] 解析；`end <= start` 自动跨天，时长用 [Shift.calcDuration]。
+     * 无字段或字段无效时返回 null / 跳过对应项。
+     */
+    private fun parseShifts(arr: org.json.JSONArray?): Map<String, Shift>? {
+        if (arr == null) return null
+        val map = mutableMapOf<String, Shift>()
+        for (i in 0 until arr.length()) {
+            val o = arr.optJSONObject(i) ?: continue
+            val name = o.optString("name").trim()
+            if (name.isEmpty()) continue
+            val start = Shift.labelToMinute(o.optString("start")) ?: continue
+            val end = Shift.labelToMinute(o.optString("end")) ?: continue
+            map[name] = Shift(name, start, end, Shift.calcDuration(start, end))
+        }
+        return map
     }
 
     data class ImportResult(

@@ -229,7 +229,7 @@
       <div class="section-head">
         <span class="kicker">配置导入</span>
         <h2>在线配置编辑器</h2>
-        <p>填写人员、转移类型与排班表，实时生成 <code>callforward://</code> 导入链接。</p>
+        <p>填写人员、班次、转移类型与排班表，实时生成 <code>callforward://</code> 导入链接。</p>
       </div>
 
       <div class="editor-card">
@@ -250,9 +250,20 @@
             </button>
           </div>
 
+          <!-- 班次管理 -->
+          <div class="field-block">
+            <div class="field-title"><span class="idx">2</span>班次管理</div>
+            <div class="field-hint">自定义班次名称与起止时间（HH:mm），排班表将联动这些班次；结束时间早于或等于开始时间视为跨天。</div>
+            <div class="shift-list" id="shiftList"></div>
+            <button class="add-btn" type="button" id="addShift" style="margin-top:12px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              添加班次
+            </button>
+          </div>
+
           <!-- 转移类型 -->
           <div class="field-block">
-            <div class="field-title"><span class="idx">2</span>转移类型</div>
+            <div class="field-title"><span class="idx">3</span>转移类型</div>
             <div class="field-hint">选择默认的呼叫转移类型，对应运营商 USSD 前缀。</div>
             <div class="type-options" id="typeOptions">
               <label class="type-option">
@@ -288,7 +299,7 @@
 
           <!-- 排班表 -->
           <div class="field-block">
-            <div class="field-title"><span class="idx">3</span>排班表</div>
+            <div class="field-title"><span class="idx">4</span>排班表</div>
             <div class="field-hint">为每一天添加一个或多个「班次 + 人员」指派。</div>
             <div class="roster-list" id="rosterList"></div>
             <button class="add-btn" type="button" id="addDay" style="margin-top:16px;">
@@ -299,7 +310,7 @@
 
           <!-- 生成 -->
           <div class="field-block" style="margin-bottom:0;">
-            <div class="field-title"><span class="idx">4</span>生成导入链接</div>
+            <div class="field-title"><span class="idx">5</span>生成导入链接</div>
             <div class="generate-area">
               <div class="generate-row">
                 <a class="btn btn-import" id="importLink" href="#">

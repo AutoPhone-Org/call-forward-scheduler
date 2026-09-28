@@ -32,6 +32,31 @@
     return SHIFT_COLORS[shift] || { bg: "#64748b", fg: "#ffffff" };
   }
 
+  // 判断跨天：结束时间 <= 开始时间
+  function isOvernight(start, end) {
+    if (!start || !end) return false;
+    var s = start.split(":");
+    var e = end.split(":");
+    if (s.length < 2 || e.length < 2) return false;
+    var sm = parseInt(s[0], 10) * 60 + parseInt(s[1], 10);
+    var em = parseInt(e[0], 10) * 60 + parseInt(e[1], 10);
+    return em <= sm;
+  }
+
+  // 从 config.shifts 查班次名对应时间，返回 "HH:mm-HH:mm"（跨天加「次日」）
+  function shiftTimeLabel(name) {
+    var shifts = latestConfig.shifts || [];
+    for (var i = 0; i < shifts.length; i++) {
+      if (shifts[i].name === name && shifts[i].start && shifts[i].end) {
+        if (isOvernight(shifts[i].start, shifts[i].end)) {
+          return shifts[i].start + "-次日" + shifts[i].end;
+        }
+        return shifts[i].start + "-" + shifts[i].end;
+      }
+    }
+    return "";
+  }
+
   // 当前展示的月份（Date 对象，取每月 1 日）
   var viewDate = new Date();
   viewDate.setDate(1);
@@ -165,6 +190,7 @@
         .map(function (a) {
           var phone = people[a.person] || "";
           var c = fallbackColor(a.shift);
+          var timeLabel = shiftTimeLabel(a.shift);
           return (
             '<div class="cal-event" style="background-color:' +
             c.bg +
@@ -172,7 +198,7 @@
             c.fg +
             ';">' +
             '<span class="cal-event-shift">' +
-            escapeHTML(a.shift) +
+            escapeHTML(a.shift + (timeLabel ? " " + timeLabel : "")) +
             "</span>" +
             '<span class="cal-event-person">' +
             escapeHTML(a.person || "未排") +
@@ -271,11 +297,12 @@
         var shiftsHTML = bucket.shifts
           .map(function (s) {
             var c = fallbackColor(s);
+            var tLabel = shiftTimeLabel(s);
             return (
               '<span class="cal-month-dot" style="background-color:' +
               c.bg +
               ';" title="' +
-              escapeHTML(s) +
+              escapeHTML(s + (tLabel ? " " + tLabel : "")) +
               '"></span>'
             );
           })

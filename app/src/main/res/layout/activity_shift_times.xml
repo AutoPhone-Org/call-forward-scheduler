@@ -29,13 +29,25 @@
             android:textColor="@color/text_secondary"
             android:textSize="13sp" />
 
-        <!-- 班次时间列表（动态生成） -->
+        <!-- 班次列表（动态生成） -->
         <LinearLayout
             android:id="@+id/shiftTimesContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:orientation="vertical" />
+
+        <!-- 新增班次 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/shiftAddButton"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/shift_add"
+            app:icon="@drawable/ic_add"
+            app:iconTint="@color/brand_blue"
+            app:cornerRadius="12dp" />
 
         <!-- 保存 -->
         <com.google.android.material.button.MaterialButton

@@ -88,16 +88,26 @@
     <string name="ai_generate_ok">已生成 %1$d 天排班并应用</string>
     <string name="ai_generate_fail">生成失败：%1$s</string>
 
-    <!-- 班次时间设置 -->
-    <string name="shift_times_title">班次时间设置</string>
-    <string name="shift_times_desc">为每个班次自定义起止时间（24 小时制）。结束时间早于或等于开始时间时自动识别为跨天班次（如 20:00-次日08:00）。</string>
+    <!-- 班次管理 -->
+    <string name="shift_times_title">班次管理</string>
+    <string name="shift_times_desc">为每个班次自定义名称与起止时间（24 小时制）。名称可任意填写，如「三班倒-1组白」；结束时间早于或等于开始时间时自动识别为跨天班次（如 20:00-次日08:00）。</string>
     <string name="shift_start_hint">开始时间 HH:mm</string>
     <string name="shift_end_hint">结束时间 HH:mm</string>
     <string name="shift_overnight">跨天</string>
+    <string name="shift_next_day">次日</string>
     <string name="shift_status_fmt">%1$s %2$s</string>
+    <string name="shift_current_fmt">当前：%1$s</string>
     <string name="shift_time_invalid">时间格式无效</string>
-    <string name="shift_times_save">保存班次时间</string>
-    <string name="shift_save_ok">已保存 %1$d 个班次时间</string>
+    <string name="shift_name_hint">班次名称</string>
+    <string name="shift_new_default">新班次</string>
+    <string name="shift_add">新增班次</string>
+    <string name="shift_delete">删除</string>
+    <string name="shift_delete_confirm">确定删除班次「%1$s」吗？</string>
+    <string name="shift_name_empty">班次名称不能为空</string>
+    <string name="shift_name_duplicate">班次名称「%1$s」重复</string>
+    <string name="shift_deleted_ref_warn">该班次已被排班表引用，删除后相关排班将无法调度</string>
+    <string name="shift_times_save">保存班次</string>
+    <string name="shift_save_ok">已保存 %1$d 个班次</string>
     <string name="shift_save_error">班次「%1$s」时间格式无效，请按 HH:mm 填写</string>
 
     <!-- 人员管理 -->

@@ -105,7 +105,11 @@ class RosterActivity : AppCompatActivity() {
         val template = currentTemplate()
         if (people.isEmpty()) return
 
-        template.shiftNames.forEach { shiftName ->
+        // 优先使用用户自定义班次名；无自定义时回退到模板默认班次名
+        val customShifts = store.loadShiftTimes()
+        val shiftNames = if (customShifts.isNotEmpty()) customShifts.keys.toList() else template.shiftNames
+
+        shiftNames.forEach { shiftName ->
             val label = TextView(this).apply {
                 text = shiftName
                 setTextColor(getColor(R.color.text_primary))

@@ -6,8 +6,15 @@
 (function () {
   "use strict";
 
-  // 默认班次名（与 App 端 DefaultTemplates.DEFAULT_SHIFTS 保持一致）
-  var SHIFT_NAMES = ["全天", "白班", "夜班", "早班", "中班", "晚班"];
+  // 默认班次（名称 + 起止时间），与 App 端 DefaultTemplates.DEFAULT_SHIFTS 对应
+  var DEFAULT_SHIFTS = [
+    { name: "全天", start: "00:00", end: "24:00" },
+    { name: "白班", start: "08:00", end: "20:00" },
+    { name: "夜班", start: "20:00", end: "08:00" },
+    { name: "早班", start: "08:00", end: "16:00" },
+    { name: "中班", start: "16:00", end: "24:00" },
+    { name: "晚班", start: "00:00", end: "08:00" },
+  ];
 
   // 转移类型取值（与 App 端 ForwardType 名称一一对应，小写）
   var FORWARD_TYPES = {
@@ -18,6 +25,7 @@
   };
 
   var peopleList = document.getElementById("peopleList");
+  var shiftList = document.getElementById("shiftList");
   var rosterList = document.getElementById("rosterList");
   var addPersonBtn = document.getElementById("addPerson");
   var addDayBtn = document.getElementById("addDay");
@@ -90,10 +98,116 @@
     refreshPersonOptions();
   }
 
+  /* ---------- 班次管理 ---------- */
+
+  // 判断跨天：结束时间 <= 开始时间
+  function isOvernight(start, end) {
+    if (!start || !end) return false;
+    var s = start.split(":");
+    var e = end.split(":");
+    if (s.length < 2 || e.length < 2) return false;
+    var sm = parseInt(s[0], 10) * 60 + parseInt(s[1], 10);
+    var em = parseInt(e[0], 10) * 60 + parseInt(e[1], 10);
+    return em <= sm;
+  }
+
+  function shiftRowHTML(name, start, end) {
+    var trash =
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+    return (
+      '<div class="shift-row">' +
+      '<input class="input shift-name" type="text" placeholder="班次名称" value="' +
+      escapeAttr(name || "") +
+      '" />' +
+      '<input class="input shift-time shift-start" type="text" placeholder="HH:mm" maxlength="5" value="' +
+      escapeAttr(start || "") +
+      '" aria-label="开始时间" />' +
+      '<span class="shift-sep">至</span>' +
+      '<input class="input shift-time shift-end" type="text" placeholder="HH:mm" maxlength="5" value="' +
+      escapeAttr(end || "") +
+      '" aria-label="结束时间" />' +
+      '<span class="shift-overnight' +
+      (isOvernight(start, end) ? " show" : "") +
+      '" title="结束时间早于或等于开始时间">跨天</span>' +
+      '<button class="icon-btn" type="button" data-action="remove-shift" title="删除班次">' +
+      trash +
+      "</button>" +
+      "</div>"
+    );
+  }
+
+  function addShift(name, start, end) {
+    shiftList.appendChild(el(shiftRowHTML(name, start, end)));
+  }
+
+  // 收集班次管理区当前定义的班次（忽略名称或时间为空者）
+  function collectShifts() {
+    var shifts = [];
+    shiftList.querySelectorAll(".shift-row").forEach(function (row) {
+      var name = row.querySelector(".shift-name").value.trim();
+      var start = row.querySelector(".shift-start").value.trim();
+      var end = row.querySelector(".shift-end").value.trim();
+      if (name && start && end) {
+        shifts.push({ name: name, start: start, end: end });
+      }
+    });
+    return shifts;
+  }
+
+  function collectShiftNames() {
+    return collectShifts().map(function (s) {
+      return s.name;
+    });
+  }
+
+  // 班次名变化时刷新排班表下拉（保留已选，被删则回退到第一个）
+  function refreshShiftOptions() {
+    var names = collectShiftNames();
+    rosterList.querySelectorAll(".assignment-row").forEach(function (row) {
+      var select = row.querySelector(".assignment-shift");
+      var prev = select.value;
+      var html = names
+        .map(function (n) {
+          return (
+            '<option value="' +
+            escapeAttr(n) +
+            '"' +
+            (n === prev ? " selected" : "") +
+            ">" +
+            escapeAttr(n) +
+            "</option>"
+          );
+        })
+        .join("");
+      select.innerHTML = html;
+      if (names.indexOf(prev) >= 0) {
+        select.value = prev;
+      } else if (names.length > 0) {
+        select.value = names[0];
+      }
+    });
+  }
+
+  // 更新单行的「跨天」提示
+  function updateOvernightHint(row) {
+    if (!row) return;
+    var start = row.querySelector(".shift-start").value.trim();
+    var end = row.querySelector(".shift-end").value.trim();
+    var hint = row.querySelector(".shift-overnight");
+    if (isOvernight(start, end)) {
+      hint.classList.add("show");
+    } else {
+      hint.classList.remove("show");
+    }
+  }
+
   /* ---------- 排班日 ---------- */
 
   function assignmentRowHTML(peopleNames, shift, person) {
-    var options = SHIFT_NAMES.map(function (s) {
+    var shiftNames = collectShiftNames();
+    if (!shift) shift = shiftNames[0] || "";
+    if (shiftNames.indexOf(shift) < 0 && shiftNames.length > 0) shift = shiftNames[0];
+    var options = shiftNames.map(function (s) {
       return (
         '<option value="' +
         escapeAttr(s) +
@@ -136,7 +250,7 @@
 
   function dayCardHTML(date, assignments) {
     var peopleNames = collectPeopleNames();
-    var rows = (assignments || [{ shift: "白班", person: peopleNames[0] || "" }])
+    var rows = (assignments || [{ shift: "", person: peopleNames[0] || "" }])
       .map(function (a) {
         return assignmentRowHTML(peopleNames, a.shift, a.person);
       })
@@ -230,7 +344,12 @@
       if (date) roster.push({ date: date, assignments: assignments });
     });
 
-    return { people: people, forwardType: forwardType, roster: roster };
+    return {
+      people: people,
+      forwardType: forwardType,
+      roster: roster,
+      shifts: collectShifts(),
+    };
   }
 
   /* ---------- Deep Link 生成 ---------- */
@@ -280,6 +399,14 @@
 
     if (action === "add-person") {
       addPerson();
+    } else if (action === "add-shift") {
+      addShift("", "", "");
+      refreshShiftOptions();
+      updateLink();
+    } else if (action === "remove-shift") {
+      btn.closest(".shift-row").remove();
+      refreshShiftOptions();
+      updateLink();
     } else if (action === "remove-person") {
       btn.closest(".person-row").remove();
       refreshPersonOptions();
@@ -293,9 +420,10 @@
     } else if (action === "add-assignment") {
       var card = btn.closest(".day-card");
       var names = collectPeopleNames();
+      var shifts = collectShiftNames();
       card
         .querySelector(".assignments-list")
-        .appendChild(el(assignmentRowHTML(names, "白班", names[0] || "")));
+        .appendChild(el(assignmentRowHTML(names, shifts[0] || "", names[0] || "")));
       updateLink();
     } else if (action === "remove-assignment") {
       btn.closest(".assignment-row").remove();
@@ -304,8 +432,13 @@
   });
 
   document.addEventListener("input", function (e) {
-    if (e.target.classList.contains("person-name")) {
+    var t = e.target;
+    if (t.classList.contains("person-name")) {
       refreshPersonOptions();
+    }
+    if (t.classList.contains("shift-name") || t.classList.contains("shift-time")) {
+      if (t.classList.contains("shift-name")) refreshShiftOptions();
+      updateOvernightHint(t.closest(".shift-row"));
     }
     updateLink();
   });
@@ -376,6 +509,11 @@
   /* ---------- 初始化示例数据 ---------- */
 
   function init() {
+    // 默认班次预填
+    DEFAULT_SHIFTS.forEach(function (s) {
+      addShift(s.name, s.start, s.end);
+    });
+
     // 默认人员示例
     addPerson("思源", "13800000001");
     addPerson("林澈", "13900000002");
