@@ -12,7 +12,7 @@ import org.json.JSONObject
 object SchedulePrompt {
 
     /** 输出格式说明（必须让模型严格输出该 JSON 结构） */
-    private const val OUTPUT_SCHEMA = """
+    private val OUTPUT_SCHEMA = """
 {
   "roster": [
     { "date": "2026-10-01", "assignments": [ { "shift": "白班", "person": "思源" } ] }
